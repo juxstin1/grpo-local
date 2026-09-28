@@ -204,9 +204,33 @@ def grade_holdout(item: dict, out: str, turns: list[_T]) -> tuple[bool, str]:
 
 # --- request layer ---------------------------------------------------------
 
+def wait_healthy(base: str, max_wait: int = 900) -> bool:
+    """Block until the server answers /health (vLLM) or /v1/models. If vLLM is
+    mid-restart (docker --restart unless-stopped), the runner waits instead of
+    logging a pile of request-errors."""
+    t0 = time.time()
+    warned = False
+    while time.time() - t0 < max_wait:
+        for path in ("/health", "/v1/models"):
+            try:
+                if requests.get(f"{base}{path}", timeout=5).status_code == 200:
+                    if warned:
+                        print(f"[health] server back after {int(time.time() - t0)}s")
+                    return True
+            except Exception:
+                pass
+        if not warned:
+            print(f"[health] waiting for {base} ...")
+            warned = True
+        time.sleep(5)
+    print(f"[health] gave up after {max_wait}s")
+    return False
+
+
 def chat(
     base: str, model: str, messages: list[dict], max_tokens: int, sampling: dict, timeout: int
 ) -> tuple[Optional[str], float, int]:
+    wait_healthy(base)
     t0 = time.time()
     body = {
         "model": model,
@@ -320,9 +344,12 @@ def main() -> None:
     ap.add_argument("--sampling", default='{"temperature":0.7,"top_p":0.8}')
     ap.add_argument("--buckets", default="lcb,bfcl,when2call,holdout")
     ap.add_argument("--attempts", type=int, default=4)
+    ap.add_argument("--set", default=str(SET_PATH),
+                    help="frozen set file (default baseline_v1.json; home: baseline_20.json)")
     args = ap.parse_args()
 
-    frozen = json.loads(SET_PATH.read_text(encoding="utf-8"))
+    frozen = json.loads(Path(args.set).read_text(encoding="utf-8"))
+    wait_healthy(args.base)
     result_dir = ROOT / "results" / args.slug
     raw_dir = result_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
@@ -339,7 +366,8 @@ def main() -> None:
             for line in raw_file.open(encoding="utf-8", errors="ignore"):
                 try:
                     rec = json.loads(line)
-                    done.add((rec["item_id"], rec["attempt"]))
+                    if rec.get("passed") is not None:  # request-errors are retried
+                        done.add((rec["item_id"], rec["attempt"]))
                 except Exception:
                     pass
 

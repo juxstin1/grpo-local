@@ -5,7 +5,7 @@ __pycache__/
 # saved adapters / checkpoints
 lora-*/
 checkpoints/
-runs/
+runs/*
 
 # model caches
 .cache/
@@ -14,3 +14,4 @@ runs/
 
 # raw eval datasets (re-download; lcb test6.jsonl is 129MB, over GitHub limit)
 evals/data/raw/
+!runs/LOG.md
