@@ -1,0 +1,106 @@
+"""Multi-turn trajectory sampling.
+
+Two invariants, both enforced structurally:
+
+1. Token stream is the concatenation of per-segment encodes, never the encode
+   of a joined string. Prompt, each generated segment, and each observation
+   are encoded on their own and id lists appended to a running list. BPE
+   merges across segment boundaries break when you join text first, so we
+   never do that - this is the verl/SkyRL convention.
+
+2. Every token id carries a trainable flag: True for policy-sampled tokens,
+   False for observations/template/prompt. The loss only ever targets
+   trainable positions, so a future single-forward-with-mask rewrite cannot
+   accidentally reward the model for "writing" context it never produced.
+
+The correctness core from before is unchanged: because sampler == trainer
+(same weights, no optimizer step until a whole group is sampled and scored),
+the logprobs recomputed at update time are bit-identical to sample-time
+logprobs - there is nothing to log on the rollout. If you move sampling to
+an external engine (Llamacpp/ExLlama), THIS seam is where per-token logprobs
+must be captured and stored instead.
+"""
+
+from __future__ import annotations
+
+import torch
+
+from config import Config
+from context import encode_observation, encode_prompt
+from tasks import MockEnv, parse_action
+from schema import Task, Trajectory, Turn
+
+
+def sample_trajectory(
+    model: torch.nn.Module,
+    tokenizer,
+    env: MockEnv,
+    task: Task,
+    cfg: Config,
+) -> Trajectory:
+    tok_ids: list[int] = []
+    trainable: list[bool] = []
+
+    def append(ids: list[int], learn: bool) -> None:
+        if not ids and tokenizer.bos_token_id is not None and not tok_ids:
+            ids = [tokenizer.bos_token_id]
+        tok_ids.extend(ids)
+        trainable.extend([learn] * len(ids))
+
+    append(encode_prompt(tokenizer, task.prompt, cfg.raw_text), learn=False)
+    turns: list[Turn] = []
+    for _ in range(cfg.max_turns):
+        prefix = list(tok_ids)  # running stream up to this turn, never strings
+        gen_ids, gen_text = _generate(model, tokenizer, prefix, cfg)
+
+        turn = Turn(gen_text=gen_text, gen_ids=gen_ids)
+        turns.append(turn)
+        # Append the EXACT sampled ids - never a re-encode of the decoded
+        # text. decode(gen_ids) may not re-encode identically (BPE merges,
+        # unicode), and the loss must see the real sampled stream.
+        tok_ids.extend(gen_ids)
+        trainable.extend([True] * len(gen_ids))
+
+        action = parse_action(gen_text)
+        if action is None:
+            break  # plain answer -> terminal, but EOS (if sampled) stays in stream
+
+        tool, arg = action
+        obs = env.step(tool, arg)
+        turn.obs_text = obs
+        append(encode_observation(tokenizer, obs, cfg.raw_text), learn=False)
+
+    done = parse_action(turns[-1].gen_text) is None
+    reward = task.reward_fn(turns, done)
+    return Trajectory(
+        task=task,
+        turns=turns,
+        tok_ids=tok_ids,
+        trainable=trainable,
+        reward=reward,
+        done=done,
+    )
+
+
+def _generate(model, tokenizer, prefix_ids: list[int], cfg: Config):
+    inp = torch.tensor([prefix_ids], device=model.device)
+
+    with torch.no_grad():
+        out = model.generate(
+            inp,
+            max_new_tokens=cfg.max_new_tokens,
+            do_sample=True,
+            temperature=cfg.temperature,
+            top_p=cfg.top_p,
+            pad_token_id=tokenizer.eos_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+            return_dict_in_generate=True,
+        )
+
+    gen_ids = out.sequences[0, inp.shape[-1] :].tolist()
+
+    # EOS stays in the stream: its logprob gets the same advantage as every
+    # other token, so winners reinforce ending and losers suppress it. Stripping
+    # it here would teach the model never to emit a turn boundary.
+    gen_text = tokenizer.decode(gen_ids, skip_special_tokens=True)
+    return gen_ids, gen_text
