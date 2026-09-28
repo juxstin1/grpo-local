@@ -9,3 +9,8 @@ runs/
 
 # model caches
 .cache/
+# scratch
+.tmp/
+
+# raw eval datasets (re-download; lcb test6.jsonl is 129MB, over GitHub limit)
+evals/data/raw/

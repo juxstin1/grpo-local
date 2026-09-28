@@ -1,0 +1,8 @@
+{
+ "model": "Qwen/Qwen3.5-2B",
+ "bucket": "when2call",
+ "n": 30,
+ "pass4_items": 0,
+ "accuracy": 0.0,
+ "per_item": {}
+}

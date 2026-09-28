@@ -1,0 +1,61 @@
+# Five-model bake-off on the 4090. vLLM (Docker Desktop, one container per model)
+# serves the OpenAI-compatible API; weights live in the hf-cache volume, and the
+# torch.compile cache in vllm-compile survives container recreates.
+# bf16 everywhere it fits; the 12B is FP8 (Ada has native FP8, closest to bf16).
+# GGUF never enters this harness: that is llama.cpp's job (final exam + Bionic).
+# Each model keeps its own chat template (rendered by vLLM from the HF repo),
+# its own vendor-recommended sampling, and THINKING IS ON for everyone (same
+# rules, same max token budget per bucket, per the bake-off spec).
+
+server:
+  port: 8000                       # host port (Docker Desktop -> Windows host)
+  container: vllm-server
+  image: vllm/vllm-openai:latest
+  hf_cache_volume: hf-cache:/root/.cache/huggingface
+  compile_volume: vllm-compile:/root/.cache/vllm
+  lora_env: VLLM_ALLOW_RUNTIME_LORA_UPDATING=True
+  gpu_memory_utilization: 0.90
+  max_model_len: 32768
+  max_num_seqs: 64
+
+families:
+  gemma:
+    # google/gemma-4 generation_config.json
+    sampling: {temperature: 1.0, top_p: 0.95, top_k: 64}
+    chat_template_kwargs: {enable_thinking: false}
+    tool_call_parser: gemma4        # verify against `vllm serve --help` at first launch
+  qwen:
+    # Qwen3.5 model card: "Instruct (non-thinking) mode for general tasks"
+    sampling: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, presence_penalty: 1.5}
+    chat_template_kwargs: {enable_thinking: false}
+    tool_call_parser: qwen3_xml
+
+models:
+  qwen3.5-2b:
+    hf: Qwen/Qwen3.5-2B
+    family: qwen
+    quant: bf16
+  qwen3.5-4b:
+    hf: Qwen/Qwen3.5-4B
+    family: qwen
+    quant: bf16
+  gemma4-e4b:
+    hf: google/gemma-4-E4B-it
+    family: gemma
+    quant: bf16
+  gemma4-12b:
+    hf: RedHatAI/gemma-4-12B-it-FP8-Dynamic
+    family: gemma
+    quant: fp8-dynamic (bf16 is 24GB, does not fit)
+  qwen3.5-9b:
+    hf: Qwen/Qwen3.5-9B
+    family: qwen
+    quant: bf16
+    # 19.3GB of weights; tight. Overrides below leave room for KV.
+    vllm_overrides: {gpu_memory_utilization: 0.95, max_model_len: 8192, max_num_seqs: 4}
+
+buckets:
+  lcb:       {n: 30, max_tokens: 3072}
+  bfcl:      {n: 50, max_tokens: 512}
+  when2call: {n: 30, max_tokens: 64}
+  holdout:   {n: 8,  max_tokens: 256, max_turns: 6}
