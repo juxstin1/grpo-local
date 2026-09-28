@@ -5,7 +5,7 @@
 ## Decisions
 - One model class: **Qwen3.5**. Pick one size (4B default), load once, leave it running.
   Every trained version is a LoRA adapter hot-loaded via `/v1/load_lora_adapter`. No restarts.
-- vLLM in Docker, not LM Studio. It crashes sometimes; the loop below makes crashes cheap.
+- vLLM in Docker, not LM Studio. Home GPU is AMD (ROCm image + device flags, see step 2). It crashes sometimes; the loop below makes crashes cheap.
 - Eval set at home is `evals/data/sets/baseline_20.json` (5 LCB, 5 BFCL, 5 When2Call, 5 holdout).
   It is a strict subset of baseline_v1 with the same item IDs. baseline_v1 (118 items) is the
   full set; do not regenerate either one.
@@ -16,15 +16,21 @@ LCB got 2/30. Treat that folder as a smoke test of the harness, not a number. Re
 
 ## The five steps at home
 1. `git clone https://github.com/juxstin1/grpo-local.git`
-2. Launch vLLM (Docker Desktop must be up):
+2. Launch vLLM. Home box is an **AMD GPU (ROCm)**, so the office `--gpus all` / `vllm/vllm-openai`
+   command does not apply. Use the launch that already worked at home. If it is not written
+   down anywhere, the standard ROCm shape is:
    ```powershell
-   docker run -d --name vllm-qwen --restart unless-stopped --gpus all -p 8000:8000 `
+   docker run -d --name vllm-qwen --restart unless-stopped `
+     --device=/dev/kfd --device=/dev/dri --group-add video `
+     --ipc=host --security-opt seccomp=unconfined -p 8000:8000 `
      -e VLLM_ALLOW_RUNTIME_LORA_UPDATING=True `
      -v hf-cache:/root/.cache/huggingface -v vllm-compile:/root/.cache/vllm `
-     vllm/vllm-openai:latest Qwen/Qwen3.5-4B `
+     rocm/vllm:latest vllm serve Qwen/Qwen3.5-4B `
      --enable-lora --max-num-seqs 64 --max-model-len 32768 --gpu-memory-utilization 0.85
    ```
-   First launch downloads the weights into hf-cache (10-30 min). Wait for `curl http://127.0.0.1:8000/health` = 200.
+   The runner does not care how vLLM is started; it only needs `http://127.0.0.1:8000/health` = 200.
+   Once a command works, paste it here verbatim so it is never rediscovered.
+   First launch downloads the weights into hf-cache (10-30 min).
 3. Run the 20-question eval (resumable; rerun the same command after any crash):
    ```powershell
    python evals\eval_runner.py --model Qwen/Qwen3.5-4B --slug qwen3.5-4b-base `
