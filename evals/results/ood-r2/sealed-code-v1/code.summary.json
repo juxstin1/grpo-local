@@ -1,0 +1,12 @@
+{
+ "model": "r2",
+ "bucket": "code",
+ "n": 61,
+ "per_attempt_acc": 0.5246,
+ "attempts": 122,
+ "cap_hit_rate": 0.2295,
+ "guess_floor_per_attempt": null,
+ "total_cap": 4096,
+ "pass4_items": 39,
+ "accuracy": 0.6393
+}

@@ -1,0 +1,19 @@
+{
+ "model": "Qwen/Qwen3.5-4B",
+ "bucket": "bfcl",
+ "n": 5,
+ "per_attempt_acc": 0.75,
+ "attempts": 20,
+ "cap_hit_rate": 0.0,
+ "guess_floor_per_attempt": null,
+ "total_cap": 4096,
+ "pass4_items": 4,
+ "accuracy": 0.8,
+ "per_item": {
+  "bfcl-001": 1,
+  "bfcl-002": 1,
+  "bfcl-003": 0,
+  "bfcl-004": 1,
+  "bfcl-005": 1
+ }
+}

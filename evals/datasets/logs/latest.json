@@ -1,0 +1,86 @@
+{
+ "cutoff": "2026-03-02",
+ "eval_set": "evals\\data\\sets\\post_cutoff_v1.json",
+ "eval_set_sha256": "b5f5a8495c848cb135a8d2f8ac9d475c753b6816782a5e1be1e529c1c52e6d47",
+ "model": "Qwen/Qwen3.5-4B",
+ "provenance": {
+  "livecodebench/code_generation_lite": {
+   "files": {
+    "test.jsonl": "2bd02b38beb48e8c46b5b9987095d999ff38cd8efc255ea5d58974317c48f63f",
+    "test2.jsonl": "095df7c5daf15f882c51a9deb84085cff1e073495a5dbcf95015a564d485f3a3",
+    "test3.jsonl": "28ed26cc83363ce3f1fe2d5fad9f8393077beb1907b167a31bd3b32f80801b79",
+    "test4.jsonl": "d711138ddaebfcf5f8ec6a4283ee677298c0f5c5d374a235af92aaf0584510da",
+    "test5.jsonl": "7f77571c2a6df0c2a72a3277650309f67e01e0008e18117e624633df53f81214",
+    "test6.jsonl": "bb4c364f71921c4495a6ad15abe1a927350b720009f4933e2e71f8af0f6fd1f5"
+   }
+  },
+  "neulab/leetcode": {
+   "revision": "aa87ed9a585ac5d1142a05eb063130b641908b79"
+  },
+  "whiskwhite/leetcode-complete": {
+   "revision": "3b37ea898b62ac0afaf9e154977ae2825ebd3d84"
+  }
+ },
+ "results": {
+  "code": {
+   "counts": {
+    "eval": 87,
+    "holdout": 61,
+    "train": 3525
+   },
+   "drops": {
+    "ambiguous-date-root": 4,
+    "no-accepted-oracle": 22,
+    "non-unique-answer": 18,
+    "not-single-method-json-signature": 4,
+    "oracle-runtime:TypeError: p": 6,
+    "post-variant-of-pre-root": 12
+   },
+   "eval_sha256": "a5671c505cb7e8c7cc2da5fbaa0c296751078263252d1ada344bb404e6687af6",
+   "leak_gate_code.eval.jsonl": "CLEAN",
+   "leak_gate_code.train.jsonl": "CLEAN",
+   "root_classes": {
+    "ambiguous": 5,
+    "post": 168,
+    "pre": 4041
+   },
+   "roots": {
+    "eval": 79,
+    "holdout": 59,
+    "train": 2908
+   },
+   "seal": "81161350ee783402c08660a3c07ef49cab3c3fb987d2812f73d40473f1b6cd8a",
+   "seal_verified": true,
+   "train_sha256": "d4afca8101afeb916c5f20e9c23ea2c7e870548fec660181d14df2935c78a73c"
+  },
+  "math": {
+   "counts": {
+    "eval": 112,
+    "holdout": 73,
+    "train": 3254
+   },
+   "drops": {
+    "ambiguous-date-root": 1,
+    "post-variant-of-pre-root": 55
+   },
+   "eval_sha256": "1c897fc4f1273a591aeaf25ce09683c4de4f0f15b4d9d7c78fcda2bcd2535250",
+   "leak_gate_math.eval.jsonl": "CLEAN",
+   "leak_gate_math.train.jsonl": "CLEAN",
+   "root_classes": {
+    "ambiguous": 1,
+    "post": 185,
+    "pre": 3079
+   },
+   "roots": {
+    "eval": 112,
+    "holdout": 73,
+    "train": 3079
+   },
+   "seal": "ea3cff7fe0363473acaf9090b41a1b8731e09896d644d1e321d547028b9fd9f5",
+   "seal_verified": true,
+   "train_sha256": "2e45017c82019d93dd3d112779155f823e40cfc173cbd62424036fb3867ac765"
+  }
+ },
+ "stamp": "20260928T223913Z",
+ "version": "v1"
+}

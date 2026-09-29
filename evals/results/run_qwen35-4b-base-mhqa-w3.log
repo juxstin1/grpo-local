@@ -1,0 +1,24 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[run] 20 attempts in flight across 1 bucket(s)
+[run] 1/20 graded
+[run] 2/20 graded
+[run] 3/20 graded
+[run] 4/20 graded
+[run] 5/20 graded
+[run] 6/20 graded
+[run] 7/20 graded
+[run] 8/20 graded
+[run] 9/20 graded
+[run] 10/20 graded
+[run] 11/20 graded
+[run] 12/20 graded
+[run] 13/20 graded
+[run] 14/20 graded
+[run] 15/20 graded
+[run] 16/20 graded
+[run] 17/20 graded
+[run] 18/20 graded
+[run] 19/20 graded
+[run] 20/20 graded
+[mhqa] per-attempt 1/20 (5.0%) vs guess floor 8.3% | cap-hit 19/20 (95.0%) | pass@4 1/5
+DONE qwen3.5-4b-base-mhqa-w3-cap4096

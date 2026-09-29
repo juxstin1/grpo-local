@@ -34,8 +34,11 @@ HOLDOUT = ROOT / "holdout" / "holdout.py"
 sys.path.insert(0, str(ROOT.parent))  # schema.py
 sys.path.insert(0, str(HOLDOUT.parent))  # holdout.py
 import holdout as HO  # noqa: E402  (sealed; imported by the runner only)
+import graders  # noqa: E402  (math / code / mhqa endpoint graders, shared with GRPO reward)
 
-MAX_WORKERS = 4
+SEAL_PY = HOLDOUT.parent / "seal.py"
+
+MAX_WORKERS = 64  # cap on concurrent attempts; match vLLM --max-num-seqs
 
 
 class _T:
@@ -94,6 +97,16 @@ def grade_lcb(item: dict, out: str) -> tuple[bool, str]:
     code = pick_code(out)
     if not code:
         return False, "no-code"
+    if item["tests"] and item["tests"][0].get("testtype") == "functional":
+        # LeetCode-style LCB items call Solution().<method>; running them as a stdin
+        # script (the old path) failed every attempt regardless of correctness.
+        m = re.search(r"def (\w+)\(self", item.get("starter_code") or "")
+        if not m:
+            return False, "no-entry"
+        res = graders.run_functional(code, f"Solution.{m.group(1)}", item["tests"])
+        if "error" in res:
+            return False, res["error"]
+        return res["passed"] == res["total"], f"pass:{res['passed']}/{res['total']}"
     try:
         compile(code, "<sol>", "exec")
     except SyntaxError as e:
@@ -204,10 +217,24 @@ def grade_holdout(item: dict, out: str, turns: list[_T]) -> tuple[bool, str]:
 
 # --- request layer ---------------------------------------------------------
 
+def _api_headers() -> dict:
+    """Hosted endpoints (DeepInfra) need a bearer key: env var or evals/.env,
+    never printed. Local vLLM needs none."""
+    key = os.environ.get("DEEPINFRA_API_KEY", "")
+    env = ROOT / ".env"
+    if not key and env.exists():
+        for line in env.read_text(encoding="utf-8").splitlines():
+            if line.startswith("DEEPINFRA_API_KEY="):
+                key = line.split("=", 1)[1].strip()
+    return {"Authorization": f"Bearer {key}"} if key else {}
+
+
 def wait_healthy(base: str, max_wait: int = 900) -> bool:
     """Block until the server answers /health (vLLM) or /v1/models. If vLLM is
     mid-restart (docker --restart unless-stopped), the runner waits instead of
     logging a pile of request-errors."""
+    if "127.0.0.1" not in base and "localhost" not in base:
+        return True  # hosted API: no /health to poll
     t0 = time.time()
     warned = False
     while time.time() - t0 < max_wait:
@@ -241,7 +268,10 @@ def chat(
     }
     try:
         r = requests.post(
-            f"{base}/v1/chat/completions", json=body, timeout=timeout
+            # DeepInfra's OpenAI route is <base>/v1/openai/chat/completions
+            f"{base}/chat/completions" if base.rstrip("/").endswith("/openai") else f"{base}/v1/chat/completions",
+            json=body, timeout=timeout,
+            headers=_api_headers(),
         )
         r.raise_for_status()
         data = r.json()
@@ -253,6 +283,8 @@ def chat(
 
 
 def render(item: dict, bucket: str) -> list[dict]:
+    if bucket in graders.SYSTEM:
+        return graders.messages(item)
     if bucket == "lcb":
         sys_msg = (
             "You are a competitive programmer. Read the problem below and output a "
@@ -280,6 +312,9 @@ def render(item: dict, bucket: str) -> list[dict]:
             }
         ]
         for t in turns:
+            if t["role"] == "system":  # chat templates allow one leading system message: fold it in
+                msgs[0]["content"] = t["content"] + "\n\n" + msgs[0]["content"]
+                continue
             msgs.append({"role": t["role"], "content": t["content"]})
         return msgs
     if bucket == "when2call":
@@ -342,21 +377,53 @@ def main() -> None:
     ap.add_argument("--slug", required=True, help="result folder name, e.g. qwen3.5-2b")
     ap.add_argument("--base", default="http://127.0.0.1:8000")
     ap.add_argument("--sampling", default='{"temperature":0.7,"top_p":0.8}')
-    ap.add_argument("--buckets", default="lcb,bfcl,when2call,holdout")
+    ap.add_argument("--buckets", default=None, help="comma list; default = every bucket in the set")
     ap.add_argument("--attempts", type=int, default=4)
     ap.add_argument("--set", default=str(SET_PATH),
-                    help="frozen set file (default baseline_v1.json; home: baseline_20.json)")
+                    help="frozen set file (default baseline_v1.json; home: baseline_20.json; "
+                         "post-cutoff: data/sets/post_cutoff_v1.json)")
+    ap.add_argument("--holdout-seal", help="sealed holdout dir (holdout/sealed/<name>): verify the seal, "
+                                           "then score aggregate-only")
+    ap.add_argument("--tokenizer", default=None,
+                    help="HF tokenizer for --total-cap when --model is a served LoRA adapter name")
+    ap.add_argument("--total-cap", type=int, default=None,
+                    help="per-request max_tokens = cap - prompt tokens (e.g. 4096 to match SFT/GRPO)")
     args = ap.parse_args()
 
-    frozen = json.loads(Path(args.set).read_text(encoding="utf-8"))
-    wait_healthy(args.base)
+    prompt_len = None
+    if args.total_cap:
+        from transformers import AutoTokenizer
+        _tok = AutoTokenizer.from_pretrained(args.tokenizer or args.model)
+
+        def prompt_len(msgs):  # same default template (thinking on) the server applies
+            ids = _tok.apply_chat_template(msgs, tokenize=True, add_generation_prompt=True)
+            return len(ids["input_ids"] if hasattr(ids, "keys") else ids)
+
+    sealed = bool(args.holdout_seal)
     result_dir = ROOT / "results" / args.slug
+    if sealed:
+        sdir = Path(args.holdout_seal)
+        v = subprocess.run([sys.executable, str(SEAL_PY), "verify", str(sdir)], capture_output=True, text=True)
+        if v.returncode:
+            sys.exit(f"seal verify FAILED for {sdir} -- holdout is not provably clean:\n{v.stdout}")
+        rows = [json.loads(l) for l in (sdir / "holdout.jsonl").read_text(encoding="utf-8").splitlines() if l]
+        frozen = {"items": {}, "buckets": {}}
+        for r in rows:
+            frozen["items"].setdefault(r["dataset"], []).append({**r, "id": r["uid"]})
+        for b, its in frozen["items"].items():
+            frozen["buckets"][b] = {"n": len(its), "max_tokens": graders.MAX_TOKENS[b]}
+        result_dir = result_dir / f"sealed-{sdir.name}"
+        args.buckets = ",".join(frozen["items"])
+    else:
+        frozen = json.loads(Path(args.set).read_text(encoding="utf-8"))
+    wait_healthy(args.base)
     raw_dir = result_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
     sampling = json.loads(args.sampling)
-    wanted = [b for b in args.buckets.split(",") if b in frozen["items"]]
+    wanted = [b for b in (args.buckets or ",".join(frozen["items"])).split(",") if b in frozen["items"]]
 
-    for bucket in wanted:
+    def setup(bucket: str):
+        """Per-bucket context: items, the attempt worker, raw file, attempts already graded."""
         items = frozen["items"][bucket]
         bucket_cfg = frozen["buckets"][bucket]
         max_tokens = bucket_cfg["max_tokens"]
@@ -371,9 +438,9 @@ def main() -> None:
                 except Exception:
                     pass
 
-        def one(item: dict) -> dict:
+        def one(item: dict, attempts: list[int]) -> dict:
             recs = []
-            for a in range(1, args.attempts + 1):
+            for a in attempts:
                 if (item["id"], a) in done:
                     continue
                 st = time.time()
@@ -400,9 +467,12 @@ def main() -> None:
                     })
                 else:
                     msgs = render(item, bucket)
+                    mt = max_tokens
+                    if args.total_cap:  # prompt + completion <= cap, same budget as SFT/GRPO
+                        mt = args.total_cap - prompt_len(msgs)
                     out, dt, tok = chat(
-                        args.base, args.model, msgs, max_tokens, sampling,
-                        timeout=max(120, int(max_tokens * 0.4)),
+                        args.base, args.model, msgs, mt, sampling,
+                        timeout=max(120, int(mt * 0.4)),
                     )
                     if out is None:
                         recs.append({"item_id": item["id"], "attempt": a, "passed": None,
@@ -412,6 +482,8 @@ def main() -> None:
                     try:
                         if bucket == "lcb":
                             passed, note = grade_lcb(item, out)
+                        elif bucket in graders.GRADERS:
+                            passed, note = graders.grade(item, out)
                         elif bucket == "bfcl":
                             passed, note = grade_bfcl(item, out)
                         else:
@@ -419,24 +491,19 @@ def main() -> None:
                         passed = bool(passed)
                     except Exception as e:
                         passed, note = None, f"grade-error:{type(e).__name__}:{str(e)[:60]}"
-                    recs.append({
-                        "item_id": item["id"], "attempt": a, "passed": passed,
-                        "tokens": tok, "latency_ms": int(dt * 1000), "note": note,
-                        "len_chars": len(out), "head": out[:200],
-                    })
+                    rec = {"item_id": item["id"], "attempt": a, "passed": passed,
+                           "tokens": tok, "max_tokens": mt, "hit_cap": tok >= mt,
+                           "latency_ms": int(dt * 1000)}
+                    if not sealed:  # sealed holdout: pass/fail only, never text
+                        rec.update(note=note, len_chars=len(out), head=out[:200])
+                    recs.append(rec)
             return {"item": item, "recs": recs}
 
-        results = []
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
-            futs = {ex.submit(one, it): it for it in items}
-            for fut in as_completed(futs):
-                res = fut.result()
-                results.append(res)
-                with raw_file.open("a", encoding="utf-8") as fh:
-                    for r in res["recs"]:
-                        fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+        return items, one, raw_file, done
 
+    def summarize(bucket: str, items: list, raw_file: Path) -> None:
         item_pass = {}
+        att_n = att_pass = att_cap = 0
         with raw_file.open(encoding="utf-8") as fh:
             for line in fh:
                 try:
@@ -445,27 +512,60 @@ def main() -> None:
                     continue
                 if rec.get("passed") is None:
                     continue
+                att_n += 1
+                att_pass += bool(rec["passed"])
+                att_cap += bool(rec.get("hit_cap"))
                 item_pass.setdefault(rec["item_id"], 0)
                 if rec["passed"]:
                     item_pass[rec["item_id"]] = max(item_pass[rec["item_id"]], 1)
         solved = sum(item_pass.values())
         total = len(items)
         acc = solved / total if total else 0.0
-        print(f"[{bucket}] solved {solved}/{total} (acc {acc:.3f})")
+        per_att = att_pass / att_n if att_n else 0.0
+        cap_rate = att_cap / att_n if att_n else 0.0
+        floors = [it["guess_floor"]["follow"] for it in items if "guess_floor" in it]
+        floor = sum(floors) / len(floors) if floors else None
+        print(f"[{bucket}] per-attempt {att_pass}/{att_n} ({per_att:.1%})"
+              + (f" vs guess floor {floor:.1%}" if floor is not None else "")
+              + f" | cap-hit {att_cap}/{att_n} ({cap_rate:.1%}) | pass@{args.attempts} {solved}/{total}")
         (result_dir / f"{bucket}.summary.json").write_text(
             json.dumps(
                 {
                     "model": args.model,
                     "bucket": bucket,
                     "n": total,
+                    "per_attempt_acc": round(per_att, 4),
+                    "attempts": att_n,
+                    "cap_hit_rate": round(cap_rate, 4),
+                    "guess_floor_per_attempt": None if floor is None else round(floor, 4),
+                    "total_cap": args.total_cap,
                     "pass4_items": solved,
                     "accuracy": round(acc, 4),
-                    "per_item": {k: v for k, v in sorted(item_pass.items())},
+                    **({} if sealed else {"per_item": {k: v for k, v in sorted(item_pass.items())}}),
                 },
                 indent=1,
             ),
             encoding="utf-8",
         )
+
+    # Every pending (item, attempt) across every bucket goes out at once; the
+    # server's scheduler does the batching. Each record is appended the moment
+    # it is graded, so a crash loses only in-flight attempts (resume skips the rest).
+    ctx = {b: setup(b) for b in wanted}
+    jobs = [(b, it, a) for b in wanted for it in ctx[b][0]
+            for a in range(1, args.attempts + 1) if (it["id"], a) not in ctx[b][3]]
+    print(f"[run] {len(jobs)} attempts in flight across {len(wanted)} bucket(s)", flush=True)
+    if jobs:
+        with ThreadPoolExecutor(max_workers=min(len(jobs), MAX_WORKERS)) as ex:
+            futs = {ex.submit(ctx[b][1], it, [a]): b for b, it, a in jobs}
+            for n, fut in enumerate(as_completed(futs), 1):
+                b = futs[fut]
+                with ctx[b][2].open("a", encoding="utf-8") as fh:
+                    for r in fut.result()["recs"]:
+                        fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+                print(f"[run] {n}/{len(jobs)} graded", flush=True)
+    for b in wanted:
+        summarize(b, ctx[b][0], ctx[b][2])
 
     print("DONE", args.slug)
 

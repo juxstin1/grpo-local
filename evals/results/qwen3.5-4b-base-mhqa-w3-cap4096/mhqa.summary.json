@@ -1,0 +1,19 @@
+{
+ "model": "Qwen/Qwen3.5-4B",
+ "bucket": "mhqa",
+ "n": 5,
+ "per_attempt_acc": 0.05,
+ "attempts": 20,
+ "cap_hit_rate": 0.95,
+ "guess_floor_per_attempt": 0.0833,
+ "total_cap": 4096,
+ "pass4_items": 1,
+ "accuracy": 0.2,
+ "per_item": {
+  "mhqa:synth:w3:20260302:h2:Ithmi_Anzeltan": 1,
+  "mhqa:synth:w3:20260302:h2:Osnor_Romarnor": 0,
+  "mhqa:synth:w3:20260302:h2:Velbri_Deithnor": 0,
+  "mhqa:synth:w3:20260302:h3:Lugre_Deronor": 0,
+  "mhqa:synth:w3:20260302:h3:Ulmar_Katraan": 0
+ }
+}

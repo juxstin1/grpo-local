@@ -81,16 +81,47 @@ def parse_action(text: str) -> Optional[tuple[str, str]]:
     return (m.group(1), m.group(2)) if m else None
 
 
+def response_section(text: str, thinking: bool) -> str:
+    """In thinking mode the prompt ends with <think>, so a generation is
+    reasoning, then </think>, then the actual output. Only the text after the
+    last </think> is the model's action / answer - reasoning is not action, and
+    rewarding a tool call mentioned in reasoning would teach it to think about
+    calling instead of calling. No </think> yet = the answer never came.
+
+    Non-thinking mode: everything is output.
+    """
+    if not thinking:
+        return text
+    idx = text.rfind("</think>")
+    if idx == -1:
+        return ""
+    return text[idx + len("</think>"):].lstrip("\n")
+
+
 def used_tool(turns: list[Turn]) -> bool:
-    return any(parse_action(t.gen_text) is not None for t in turns)
+    return any(parse_action(t.resp_text) is not None for t in turns)
+
+
+def turns_parsed(turns: list[Turn]) -> float:
+    """Fraction of turns whose RESPONSE section contained a parseable action."""
+    if not turns:
+        return 0.0
+    return sum(1 for t in turns if parse_action(t.resp_text) is not None) / len(turns)
 
 
 def last_answer(turns: list[Turn]) -> Optional[str]:
     for t in reversed(turns):
-        m = ANSWER_RE.search(t.gen_text)
+        m = ANSWER_RE.search(t.resp_text)
         if m:
             return m.group(1).strip().strip(".")
     return None
+
+
+def incomplete(turns: list[Turn]) -> bool:
+    """Honest truncation check: the final turn was cut off by the token budget
+    (no EOS sampled), so any ANSWER/tool text in it is partial. An incomplete
+    trajectory never earns credit, even if a substring would match."""
+    return bool(turns) and turns[-1].truncated
 
 
 def normalize(s: str) -> str:
@@ -98,7 +129,10 @@ def normalize(s: str) -> str:
 
 
 def reward_answer(turns: list[Turn], done: bool, ground_truth: str) -> float:
-    """1.0 if the final ANSWER equals ground truth, else 0.0."""
+    """1.0 if the final ANSWER equals ground truth, else 0.0. Never for a
+    truncated final turn."""
+    if incomplete(turns):
+        return 0.0
     ans = last_answer(turns)
     return 1.0 if ans is not None and normalize(ans) == normalize(ground_truth) else 0.0
 
@@ -109,6 +143,8 @@ def reward_tool_discipline(turns: list[Turn], done: bool, ground_truth: str) -> 
     Punishes guessing without a tool: an answer with zero tool calls caps at
     the format reward but never reaches the full 1.0.
     """
+    if incomplete(turns):
+        return 0.0
     ans = last_answer(turns)
     correct = ans is not None and normalize(ans) == normalize(ground_truth)
     if correct and used_tool(turns):
@@ -119,14 +155,17 @@ def reward_tool_discipline(turns: list[Turn], done: bool, ground_truth: str) -> 
 
 
 def make_tasks() -> list[Task]:
-    """The seed task set. Buckets from the plan become new entries here."""
+    """The seed task set. Buckets from the plan become new entries here.
+
+    Task.prompt is the user-turn content; the SYSTEM message is applied by
+    context.encode_prompt, so the two never double-wrap in chat mode.
+    """
 
     def hop1() -> Task:
         return Task(
             name="hop1-lookup",
             prompt=(
-                SYSTEM
-                + "\nUSER TASK: What is the value of the config key delay_ms?\n"
+                "What is the value of the config key delay_ms?\n"
                 "Report only the number."
             ),
             reward_fn=lambda turns, done: reward_answer(turns, done, "240"),
@@ -139,8 +178,7 @@ def make_tasks() -> list[Task]:
         return Task(
             name="hop2-grep",
             prompt=(
-                SYSTEM
-                + "\nUSER TASK: The config key 'pan' is read by one of the project "
+                "The config key 'pan' is read by one of the project "
                 "threads (audio or ui). Find where it is read and name the thread.\n"
                 "Report only: audio or ui"
             ),
@@ -153,9 +191,8 @@ def make_tasks() -> list[Task]:
         return Task(
             name="tool-form",
             prompt=(
-                SYSTEM
-                + f"\nUSER TASK: Using the tools, find the value of the config key gain.\n"
-                f"Report only the number."
+                "Using the tools, find the value of the config key gain.\n"
+                "Report only the number."
             ),
             reward_fn=lambda turns, done: reward_tool_discipline(turns, done, g),
             ground_truth=g,

@@ -1,0 +1,34 @@
+2026-09-28 19:35:34,684 INFO prepare v1 | model Qwen/Qwen3.5-4B | cutoff 2026-03-02 | leetcode margin 7d | holdout frac 0.40 | seed grpo-local:qwen3.5-4b:2026-03-02
+2026-09-28 19:35:34,688 INFO == code: loading sources
+2026-09-28 19:35:46,483 WARNING Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-09-28 19:36:27,506 INFO   code: 7502 records loaded
+2026-09-28 19:36:29,023 INFO   clustering: 7502 records -> 4214 root tasks | lineage merges 3270 | skeleton pairs tested 4063, merged 2971 (tau 0.70, k 5) | oversized LSH buckets skipped 0 | largest roots [11, 10, 10, 9, 9]
+2026-09-28 19:36:29,125 INFO     seal.py| SEALED code-v1 (eval): 59 root tasks / 61 items
+2026-09-28 19:36:29,125 INFO     seal.py|   manifest_sha256 cf2c434766bfb8760cf10409c8e2c66e26551bff8f056e2d64978b80a725bfdf
+2026-09-28 19:36:29,127 INFO     seal.py|   merkle_root     81161350ee783402c08660a3c07ef49cab3c3fb987d2812f73d40473f1b6cd8a
+2026-09-28 19:36:29,127 INFO     seal.py|   ledger_entry    b95b19870486a19d5af813ffccbabcbca67b31ad3621ac0165d895086d959e12
+2026-09-28 19:36:29,193 INFO     seal.py| OK   holdout_sha256
+2026-09-28 19:36:29,193 INFO     seal.py|   OK   roots_sha256
+2026-09-28 19:36:29,193 INFO     seal.py|   OK   root_hashes
+2026-09-28 19:36:29,193 INFO     seal.py|   OK   merkle_root
+2026-09-28 19:36:29,193 INFO     seal.py|   OK   ledger_chain
+2026-09-28 19:36:29,193 INFO     seal.py|   OK   manifest_in_ledger
+2026-09-28 19:36:29,193 INFO     seal.py| manifest_sha256 cf2c434766bfb8760cf10409c8e2c66e26551bff8f056e2d64978b80a725bfdf
+2026-09-28 19:36:42,746 INFO     seal.py| Traceback (most recent call last):
+2026-09-28 19:36:42,746 INFO     seal.py|   File "C:\Users\juxxs\vllm\grpo-local\evals\holdout\seal.py", line 206, in <module>
+2026-09-28 19:36:42,746 INFO     seal.py|     main()
+2026-09-28 19:36:42,746 INFO     seal.py|   File "C:\Users\juxxs\vllm\grpo-local\evals\holdout\seal.py", line 202, in main
+2026-09-28 19:36:42,746 INFO     seal.py|     {"seal": cmd_seal, "verify": cmd_verify, "check": cmd_check}[a.cmd](a)
+2026-09-28 19:36:42,746 INFO     seal.py|   File "C:\Users\juxxs\vllm\grpo-local\evals\holdout\seal.py", line 175, in cmd_check
+2026-09-28 19:36:42,746 INFO     seal.py|     root = root_of(json.loads(line), rf)
+2026-09-28 19:36:42,746 INFO     seal.py|                    ^^^^^^^^^^^^^^^^
+2026-09-28 19:36:42,746 INFO     seal.py|   File "C:\Users\juxxs\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 346, in loads
+2026-09-28 19:36:42,746 INFO     seal.py|     return _default_decoder.decode(s)
+2026-09-28 19:36:42,746 INFO     seal.py|            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-09-28 19:36:42,746 INFO     seal.py|   File "C:\Users\juxxs\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 337, in decode
+2026-09-28 19:36:42,746 INFO     seal.py|     obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+2026-09-28 19:36:42,746 INFO     seal.py|                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-09-28 19:36:42,746 INFO     seal.py|   File "C:\Users\juxxs\AppData\Local\Programs\Python\Python312\Lib\json\decoder.py", line 353, in raw_decode
+2026-09-28 19:36:42,746 INFO     seal.py|     obj, end = self.scan_once(s, idx)
+2026-09-28 19:36:42,746 INFO     seal.py|                ^^^^^^^^^^^^^^^^^^^^^^
+2026-09-28 19:36:42,746 INFO     seal.py| json.decoder.JSONDecodeError: Unterminated string starting at: line 1 column 1094 (char 1093)

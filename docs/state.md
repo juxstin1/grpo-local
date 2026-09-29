@@ -1,5 +1,9 @@
 # GRPO - state
 
+**Start here: [HANDOFF-2026-09-29.md](HANDOFF-2026-09-29.md)** (state, what's running, gotchas). **Next up: [NEXT-workspace-gym.md](NEXT-workspace-gym.md)** (real file tools, sandbox, Find gym). Best adapter: r3.
+
+**Canon pipeline + rules: `SKILL.md` -> "Training pipeline (canon)"** (baseline -> SFT own wins -> re-baseline -> GRPO; DPO later for uncheckable).
+
 [2026-09-28] Home plan (supersedes anything older)
 
 ## Decisions
@@ -16,9 +20,33 @@ LCB got 2/30. Treat that folder as a smoke test of the harness, not a number. Re
 
 ## The five steps at home
 1. `git clone https://github.com/juxstin1/grpo-local.git`
-2. Launch vLLM. Home box is an **AMD GPU (ROCm)**, so the office `--gpus all` / `vllm/vllm-openai`
-   command does not apply. Use the launch that already worked at home. If it is not written
-   down anywhere, the standard ROCm shape is:
+2. Launch vLLM. **Working home command (verified 2026-09-28, RX 9070 XT via Docker Desktop /dev/dxg):**
+   Image `vllm-dflash-wsl:v0.27.1` (built from `C:\Users\juxxs\vllm`). Stock
+   `vllm/vllm-openai-rocm:v0.30.0` crashes on /dev/dxg; /dev/kfd does not exist here.
+   ```powershell
+   $shim = "C:\Users\juxxs\vllm\.docker-rocdxg"
+   docker run -d --name vllm-qwen35 --restart unless-stopped --device /dev/dxg `
+     --cap-add SYS_PTRACE --security-opt seccomp=unconfined --ipc host --shm-size 8g -p 8000:8000 `
+     -e HSA_ENABLE_DXG_DETECTION=1 -e VLLM_ROCM_USE_AITER=0 -e VLLM_USE_V2_MODEL_RUNNER=0 `
+     -e VLLM_WSL2_ENABLE_PIN_MEMORY=1 -e VLLM_ALLOW_RUNTIME_LORA_UPDATING=True -e HF_HUB_OFFLINE=1 `
+     -v "${shim}\libdxcore.so:/usr/lib/libdxcore.so:ro" `
+     -v "${shim}\librocdxg.so:/usr/lib/librocdxg.so:ro" `
+     -v "${shim}\dids.conf:/usr/share/rocdxg/dids.conf:ro" `
+     -v vllm_huggingface-cache:/root/.cache/huggingface `
+     -v "C:\Users\juxxs\vllm\grpo-local:/work:ro" `
+     vllm-dflash-wsl:v0.27.1 Qwen/Qwen3.5-4B --host 0.0.0.0 --port 8000 `
+     --attention-backend ROCM_ATTN --enforce-eager `
+     --max-model-len 16384 --max-num-seqs 40 --gpu-memory-utilization 0.85 `
+     --enable-prefix-caching --reasoning-parser qwen3 `
+     --limit-mm-per-prompt '{"image":0,"video":0}' --enable-lora --max-lora-rank 8
+   ```
+   Boot ~4 min (weights 8.0 GiB, KV 4.75 GiB). Thinking arrives in `reasoning_content`.
+   vLLM holds 85% of VRAM: stop it before `train.py` (the VRAM guard will refuse otherwise).
+   Adapters: repo is mounted at `/work`; load with
+   `POST /v1/load_lora_adapter {"lora_name":"<name>","lora_path":"/work/lora-Qwen3.5-4B-sft-<name>"}`
+   and request `"model": "<name>"`.
+
+   Old generic guess, kept for reference only (/dev/kfd does NOT exist on this box):
    ```powershell
    docker run -d --name vllm-qwen --restart unless-stopped `
      --device=/dev/kfd --device=/dev/dri --group-add video `

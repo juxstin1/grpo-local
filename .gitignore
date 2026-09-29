@@ -15,3 +15,10 @@ runs/*
 # raw eval datasets (re-download; lcb test6.jsonl is 129MB, over GitHub limit)
 evals/data/raw/
 !runs/LOG.md
+
+# local env + big/derived data (added 2026-09-29)
+.venv/
+evals/data/pools/
+sft/data/*.fail.jsonl
+sft/data/*.log
+

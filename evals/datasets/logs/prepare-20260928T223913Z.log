@@ -1,0 +1,18 @@
+2026-09-28 19:39:13,479 INFO prepare v1 | model Qwen/Qwen3.5-4B | cutoff 2026-03-02 | leetcode margin 7d | holdout frac 0.40 | seed grpo-local:qwen3.5-4b:2026-03-02
+2026-09-28 19:39:13,482 INFO == code: loading sources
+2026-09-28 19:40:05,601 INFO   code: 7502 records loaded
+2026-09-28 19:40:07,164 INFO   clustering: 7502 records -> 4214 root tasks | lineage merges 3270 | skeleton pairs tested 4063, merged 2971 (tau 0.70, k 5) | oversized LSH buckets skipped 0 | largest roots [11, 10, 10, 9, 9]
+2026-09-28 19:40:07,199 INFO   code-v1: holdout already sealed with identical roots; verifying
+2026-09-28 19:40:07,255 INFO     seal.py| OK   holdout_sha256
+2026-09-28 19:40:07,255 INFO     seal.py|   OK   roots_sha256
+2026-09-28 19:40:07,255 INFO     seal.py|   OK   root_hashes
+2026-09-28 19:40:07,255 INFO     seal.py|   OK   merkle_root
+2026-09-28 19:40:07,255 INFO     seal.py|   OK   ledger_chain
+2026-09-28 19:40:07,255 INFO     seal.py|   OK   manifest_in_ledger
+2026-09-28 19:40:07,255 INFO     seal.py| manifest_sha256 cf2c434766bfb8760cf10409c8e2c66e26551bff8f056e2d64978b80a725bfdf
+2026-09-28 19:40:19,882 INFO     seal.py| CLEAN: 3525 train records vs code-v1 (0 hits) -- logged to SEALS.log
+2026-09-28 19:40:19,965 INFO     seal.py| CLEAN: 87 train records vs code-v1 (0 hits) -- logged to SEALS.log
+2026-09-28 19:40:19,965 INFO   code: train 3525 | eval 87 | holdout 61 (roots {'train': 2908, 'eval': 79, 'holdout': 59}) | 66s
+2026-09-28 19:40:19,965 INFO   code drops: {'not-single-method-json-signature': 4, 'oracle-runtime:TypeError: p': 6, 'non-unique-answer': 18, 'no-accepted-oracle': 22, 'post-variant-of-pre-root': 12, 'ambiguous-date-root': 4}
+2026-09-28 19:40:20,053 INFO eval set -> C:\Users\juxxs\vllm\grpo-local\evals\data\sets\post_cutoff_v1.json ({'math': 112, 'code': 87})
+2026-09-28 19:40:20,102 INFO done -> RULES.md table updated, summary logs/prepare-20260928T223913Z.json
