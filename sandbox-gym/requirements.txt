@@ -1,0 +1,8 @@
+# Same torch stack as grpo-local (shared .venv works; torch must be the ROCm
+# build for home training). eval/collect need requests + transformers.
+torch>=2.1
+transformers>=4.42
+peft>=0.11
+numpy
+psutil
+requests
