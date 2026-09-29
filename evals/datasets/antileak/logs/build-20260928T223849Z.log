@@ -1,0 +1,22 @@
+2026-09-28 19:38:49,335 INFO AntiLeakBench-method build: cutoff=2026-03-02 current=2026-09-28 args={'cutoff': '2026-03-02', 'current': '2026-09-28', 'max_items': 200, 'per_pid': 25, 'per_subject': 2, 'noise': 5, 'seed': 42, 'trim_chars': 1500, 'max_subjects_per_pid': 1500, 'max_subjects_pool_pid': 150, 'run_date': '2026-09-28', 'offline': False}
+2026-09-28 19:38:49,336 INFO deviations: escaped regex labels; deprecated rank ignored; ended/ambiguous hop values dropped; new claim needs day precision & not ended; word-boundary distractor exclusion; trimmed docs
+2026-09-28 19:38:49,347 INFO == P6 (head of government): single-hop
+2026-09-28 19:39:08,005 INFO    {'window_claims': 203, 'window_subjects': 203, 'subjects_examined': 203, 'drop:no_prior_value': 90, 'drop:old_value_no_end_time': 3, 'drop:start_not_day_precision': 1, 'drop:same_object': 2, 'drop:overlapping_values': 1, 'updates': 106, 'drop:no_en_label': 40, 'drop:no_enwiki_object': 44, 'drop:wiki_lead_missing_subject_or_answer': 3, 'singlehop_kept': 19}
+2026-09-28 19:39:08,005 INFO == P35 (head of state): single-hop
+2026-09-28 19:39:10,264 WARNING HTTP 429 from www.wikidata.org (attempt 1), sleeping 49s
+2026-09-28 19:40:00,330 INFO    {'window_claims': 16, 'window_subjects': 15, 'subjects_examined': 15, 'drop:no_prior_value': 2, 'drop:old_value_no_end_time': 1, 'updates': 12, 'drop:wiki_lead_missing_subject_or_answer': 2, 'singlehop_kept': 10}
+2026-09-28 19:40:00,330 INFO == P159 (headquarters location): single-hop
+2026-09-28 19:40:09,357 INFO    {'window_claims': 22, 'window_subjects': 22, 'subjects_examined': 22, 'drop:no_prior_value': 17, 'drop:old_value_no_end_time': 1, 'drop:same_object': 2, 'updates': 2, 'drop:wiki_lead_missing_subject_or_answer': 2, 'singlehop_kept': 0}
+2026-09-28 19:40:09,357 INFO == P169 (chief executive officer): single-hop
+2026-09-28 19:40:12,122 INFO    {'window_claims': 43, 'window_subjects': 42, 'subjects_examined': 42, 'drop:no_prior_value': 26, 'drop:start_not_day_precision': 2, 'updates': 14, 'drop:no_en_label': 5, 'drop:no_enwiki_object': 7, 'drop:wiki_lead_missing_subject_or_answer': 1, 'singlehop_kept': 1}
+2026-09-28 19:40:12,122 INFO == P286 (head coach): single-hop
+2026-09-28 19:40:31,589 WARNING HTTP 429 from www.wikidata.org (attempt 1), sleeping 27s
+2026-09-28 19:41:04,759 WARNING HTTP 429 from en.wikipedia.org (attempt 1), sleeping 54s
+2026-09-28 19:42:03,840 WARNING HTTP 429 from en.wikipedia.org (attempt 1), sleeping 55s
+2026-09-28 19:43:08,905 INFO    {'window_claims': 269, 'window_subjects': 227, 'subjects_examined': 227, 'drop:new_value_already_ended': 7, 'drop:start_not_day_precision': 8, 'drop:no_prior_value': 9, 'drop:overlapping_values': 2, 'drop:old_value_no_end_time': 3, 'drop:same_object': 2, 'updates': 196, 'drop:no_en_label': 4, 'drop:no_enwiki_object': 7, 'drop:wiki_lead_missing_subject_or_answer': 111, 'singlehop_kept': 74}
+2026-09-28 19:43:08,905 INFO == P1037 (director / manager): single-hop
+2026-09-28 19:43:15,611 INFO    {'window_claims': 70, 'window_subjects': 65, 'subjects_examined': 65, 'drop:no_prior_value': 29, 'drop:old_value_no_end_time': 7, 'drop:start_not_day_precision': 2, 'updates': 27, 'drop:no_en_label': 11, 'drop:no_enwiki_object': 14, 'drop:wiki_lead_missing_subject_or_answer': 1, 'singlehop_kept': 1}
+2026-09-28 19:43:15,611 INFO == P1416 (affiliation): single-hop
+2026-09-28 19:43:27,143 WARNING HTTP 429 from en.wikipedia.org (attempt 1), sleeping 32s
+2026-09-28 19:43:59,379 INFO    {'window_claims': 21, 'window_subjects': 21, 'subjects_examined': 21, 'drop:no_prior_value': 12, 'drop:old_value_no_end_time': 3, 'drop:start_not_day_precision': 1, 'updates': 5, 'drop:no_en_label': 2, 'drop:wiki_lead_missing_subject_or_answer': 1, 'singlehop_kept': 2}
+2026-09-28 19:43:59,379 INFO == P54 (member of sports team): single-hop

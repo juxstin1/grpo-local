@@ -1,0 +1,14 @@
+{
+ "model": "Qwen/Qwen3.5-4B",
+ "bucket": "code",
+ "n": 5,
+ "pass4_items": 1,
+ "accuracy": 0.2,
+ "per_item": {
+  "code:leetcode:count-good-subarrays": 0,
+  "code:leetcode:minimize-the-maximum-waiting-time-at-synchronized-traffic-lights": 0,
+  "code:leetcode:minimum-generations-to-target-point": 0,
+  "code:leetcode:rearrange-array-by-removing-distinct-values": 0,
+  "code:leetcode:sort-vowels-by-frequency": 1
+ }
+}

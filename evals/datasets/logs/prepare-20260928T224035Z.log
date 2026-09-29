@@ -1,0 +1,3 @@
+2026-09-28 19:40:35,665 INFO prepare v1 | model Qwen/Qwen3.5-4B | cutoff 2026-03-02 | leetcode margin 7d | holdout frac 0.40 | seed grpo-local:qwen3.5-4b:2026-03-02
+2026-09-28 19:40:35,670 INFO == math: loading sources
+2026-09-28 19:40:44,776 WARNING Timeout is disabled as parsing_timeout is None or <= 0, you must provide                         the logic for timeout interuption yourself to prevent code getting stuck.

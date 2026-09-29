@@ -1,0 +1,14 @@
+{
+ "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+ "bucket": "math",
+ "n": 5,
+ "pass4_items": 2,
+ "accuracy": 0.4,
+ "per_item": {
+  "math:arxivmath-0526:35": 1,
+  "math:arxivmath-0626:15": 0,
+  "math:arxivmath-0626:28": 1,
+  "math:arxivmath-0626:42": 0,
+  "math:arxivmath-0826:24": 0
+ }
+}

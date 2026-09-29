@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+# per-episode workspaces, collections, results, locks (derived; regenerate from seeds)
+data/
+runs/
+*.log

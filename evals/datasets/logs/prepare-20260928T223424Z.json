@@ -1,0 +1,126 @@
+{
+ "cutoff": "2026-03-02",
+ "eval_set": "evals\\data\\sets\\post_cutoff_v1.json",
+ "eval_set_sha256": "2bd098920f27a5d61f14cf51bbf61e249e446013d4949dfe27efe4ebc750d279",
+ "model": "Qwen/Qwen3.5-4B",
+ "provenance": {
+  "MathArena/aime_2023_I": {
+   "revision": "4e55d1bf38f277ab89ba7fc987f76604a6c3877c"
+  },
+  "MathArena/aime_2023_II": {
+   "revision": "bcfb17ba39a7ac54545c749c9f57b836f23e070f"
+  },
+  "MathArena/aime_2024_I": {
+   "revision": "ea5b061c3e8039dc9858defaafc407d04b995e9f"
+  },
+  "MathArena/aime_2024_II": {
+   "revision": "29d5d31e9b46e215fc24d9b2a3047506823dd101"
+  },
+  "MathArena/aime_2025": {
+   "revision": "c94da77eb22bbd6439e62a323bec18493a421302"
+  },
+  "MathArena/aime_2025_I": {
+   "revision": "65981f72a5ac5bd4d9aaab2cb3adcc8955c95873"
+  },
+  "MathArena/aime_2025_II": {
+   "revision": "68558a4580ae339ef7473f588f44ac41571749b8"
+  },
+  "MathArena/aime_2026": {
+   "revision": "d2de22f3c656b4f56cf8981212186377d1e23bc3"
+  },
+  "MathArena/aime_2026_I": {
+   "revision": "37806d403fa0c9ae914ee7d7da215cf2a3c7a94d"
+  },
+  "MathArena/apex-shortlist": {
+   "revision": "f3efdf224ef665f129ddaae37699f6098c65781b"
+  },
+  "MathArena/apex_2025": {
+   "revision": "ac8a641db12cc87be39e61ea89f2e04c80c5f2e7"
+  },
+  "MathArena/arxivmath": {
+   "revision": "f0a9cf83259855c31b37168eca646ec6f0e2598c"
+  },
+  "MathArena/arxivmath-0126": {
+   "revision": "bac939ba603c93f905aa48072980ea681a2824cd"
+  },
+  "MathArena/arxivmath-0226": {
+   "revision": "a038fd1b01405ea1102e165b6ef43693fd16ca6b"
+  },
+  "MathArena/arxivmath-0326": {
+   "revision": "14ff32983ae4c72b75fb64eba750f3c27f46607a"
+  },
+  "MathArena/arxivmath-0426": {
+   "revision": "fc2cb715b5855c100142e4c05a8042351c21f3c8"
+  },
+  "MathArena/arxivmath-0526": {
+   "revision": "69f701c7f266bfba235ef302ff9b19093f7455bb"
+  },
+  "MathArena/arxivmath-0626": {
+   "revision": "dca0d771ab20c1b8e8c50d0921bf693f7bfe663d"
+  },
+  "MathArena/arxivmath-0826": {
+   "revision": "977a3a0083198e11ac4f20fe79288351cebd6281"
+  },
+  "MathArena/arxivmath-1225": {
+   "revision": "90c60aa1eadbb72168640169d82154b079cdeaac"
+  },
+  "MathArena/arxivmath-training": {
+   "revision": "df8124014f27975d4457d02c95c29b5941e58130"
+  },
+  "MathArena/brumo_2025": {
+   "revision": "6de9bc0987f5710c6376ee980e1483dbeb55cfda"
+  },
+  "MathArena/cmimc_2025": {
+   "revision": "8f27517ce4ad1d05e023c0e7eca4344754ba2a04"
+  },
+  "MathArena/hmmt_feb_2023": {
+   "revision": "43d9106e3ae5733bb57be0322b3e855e6b2cd4ea"
+  },
+  "MathArena/hmmt_feb_2024": {
+   "revision": "b3cf7fb48814f76142d0847003a5aac0876f3bf4"
+  },
+  "MathArena/hmmt_feb_2025": {
+   "revision": "6fdc4277120810ff75aa22d2d5489b91f7a262a1"
+  },
+  "MathArena/hmmt_feb_2026": {
+   "revision": "02fba4f74d8e68e73e66a02d540fd979c05c274c"
+  },
+  "MathArena/hmmt_nov_2025": {
+   "revision": "118dbfb45c4c9467c672268ed55166642897aa46"
+  },
+  "MathArena/smt_2025": {
+   "revision": "d8e99d83f1583842f46d4953cd960eea5d887e45"
+  }
+ },
+ "results": {
+  "math": {
+   "counts": {
+    "eval": 112,
+    "holdout": 73,
+    "train": 3254
+   },
+   "drops": {
+    "ambiguous-date-root": 1,
+    "post-variant-of-pre-root": 55
+   },
+   "eval_sha256": "1c897fc4f1273a591aeaf25ce09683c4de4f0f15b4d9d7c78fcda2bcd2535250",
+   "leak_gate_math.eval.jsonl": "CLEAN",
+   "leak_gate_math.train.jsonl": "CLEAN",
+   "root_classes": {
+    "ambiguous": 1,
+    "post": 185,
+    "pre": 3079
+   },
+   "roots": {
+    "eval": 112,
+    "holdout": 73,
+    "train": 3079
+   },
+   "seal": "ea3cff7fe0363473acaf9090b41a1b8731e09896d644d1e321d547028b9fd9f5",
+   "seal_verified": true,
+   "train_sha256": "2e45017c82019d93dd3d112779155f823e40cfc173cbd62424036fb3867ac765"
+  }
+ },
+ "stamp": "20260928T223424Z",
+ "version": "v1"
+}

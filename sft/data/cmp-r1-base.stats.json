@@ -1,0 +1,718 @@
+{
+ "name": "cmp-r1-base",
+ "model": "Qwen/Qwen3.5-4B@unknown",
+ "attempts": 4,
+ "refused_leak_gate": 0,
+ "skipped_prompt_too_long": 0,
+ "by_bucket": {
+  "mhqa": {
+   "tasks": 20,
+   "never": 7,
+   "sometimes": 13,
+   "always": 0,
+   "attempts_truncated": 60,
+   "kept": 18
+  },
+  "code": {
+   "tasks": 20,
+   "never": 14,
+   "sometimes": 6,
+   "always": 0,
+   "attempts_truncated": 57,
+   "kept": 12
+  }
+ },
+ "per_task": {
+  "mhqa:synth:w3-12x6x6x6:2000:h2:Norka_Ulcalka": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2000:Norka_Ulcalka",
+   "pass": 1,
+   "truncated": 3,
+   "fail": 0,
+   "error": 0,
+   "kept": 1,
+   "win_tokens": [
+    700
+   ],
+   "all_tokens": [
+    700,
+    3020,
+    3020,
+    3020
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2002:h2:Marmi_Brianos": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2002:Marmi_Brianos",
+   "pass": 1,
+   "truncated": 3,
+   "fail": 0,
+   "error": 0,
+   "kept": 1,
+   "win_tokens": [
+    1294
+   ],
+   "all_tokens": [
+    1294,
+    3017,
+    3017,
+    3017
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2000:h2:Osve_Maryenith": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2000:Osve_Maryenith",
+   "pass": 3,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    1697,
+    2867,
+    2965
+   ],
+   "all_tokens": [
+    1697,
+    2867,
+    2965,
+    3022
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2001:h2:Ithde_Traospa": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2001:Ithde_Traospa",
+   "pass": 1,
+   "truncated": 3,
+   "fail": 0,
+   "error": 0,
+   "kept": 1,
+   "win_tokens": [
+    1770
+   ],
+   "all_tokens": [
+    1770,
+    2995,
+    2995,
+    2995
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2001:h2:Marka_Zelrovel": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2001:Marka_Zelrovel",
+   "pass": 2,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    2250,
+    2956
+   ],
+   "all_tokens": [
+    2250,
+    2956,
+    2996,
+    2996
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2000:h2:Ithro_Pabriyen": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2000:Ithro_Pabriyen",
+   "pass": 1,
+   "truncated": 3,
+   "fail": 0,
+   "error": 0,
+   "kept": 1,
+   "win_tokens": [
+    2810
+   ],
+   "all_tokens": [
+    2810,
+    3022,
+    3022,
+    3022
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2002:h2:Callu_Ithoska": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2002:Callu_Ithoska",
+   "pass": 2,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    2699,
+    2736
+   ],
+   "all_tokens": [
+    2699,
+    3015,
+    2736,
+    3015
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2001:h2:Ithtra_Qoyenka": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2001:Ithtra_Qoyenka",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2994,
+    2994,
+    2994,
+    2994
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2001:h2:Venor_Velzelsor": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2001:Venor_Velzelsor",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2995,
+    2995,
+    2995,
+    2995
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2000:h2:Ithnor_Roqogre": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2000:Ithnor_Roqogre",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3020,
+    3020,
+    3020,
+    3020
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2002:h2:Velro_Qozelzel": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2002:Velro_Qozelzel",
+   "pass": 1,
+   "truncated": 3,
+   "fail": 0,
+   "error": 0,
+   "kept": 1,
+   "win_tokens": [
+    2370
+   ],
+   "all_tokens": [
+    3015,
+    2370,
+    3015,
+    3015
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2004:h2:Mitra_Osgreos": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2004:Mitra_Osgreos",
+   "pass": 3,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    1926,
+    2606,
+    1799
+   ],
+   "all_tokens": [
+    1926,
+    2606,
+    1799,
+    3007
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2004:h2:Greka_Osulzel": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2004:Greka_Osulzel",
+   "pass": 2,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    2168,
+    2400
+   ],
+   "all_tokens": [
+    2168,
+    2400,
+    3007,
+    3007
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2003:h2:Qobri_Paromi": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2003:Qobri_Paromi",
+   "pass": 1,
+   "truncated": 3,
+   "fail": 0,
+   "error": 0,
+   "kept": 1,
+   "win_tokens": [
+    2744
+   ],
+   "all_tokens": [
+    2744,
+    3018,
+    3018,
+    3018
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2004:h2:Mios_Sorgrero": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2004:Mios_Sorgrero",
+   "pass": 1,
+   "truncated": 3,
+   "fail": 0,
+   "error": 0,
+   "kept": 1,
+   "win_tokens": [
+    2833
+   ],
+   "all_tokens": [
+    2833,
+    3007,
+    3007,
+    3007
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2003:h2:Lumar_Vekavel": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2003:Lumar_Vekavel",
+   "pass": 1,
+   "truncated": 3,
+   "fail": 0,
+   "error": 0,
+   "kept": 1,
+   "win_tokens": [
+    2995
+   ],
+   "all_tokens": [
+    2995,
+    3018,
+    3018,
+    3018
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2002:h2:Kapa_Kasoros": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2002:Kapa_Kasoros",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3017,
+    3017,
+    3017,
+    3017
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2003:h2:Anvel_Qofaos": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2003:Anvel_Qofaos",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3018,
+    3018,
+    3018,
+    3018
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2003:h2:Miyen_Luyende": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2003:Miyen_Luyende",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3018,
+    3018,
+    3018,
+    3018
+   ]
+  },
+  "mhqa:synth:w3-12x6x6x6:2004:h2:Ulmar_Anosmi": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3-12x6x6x6:2004:Ulmar_Anosmi",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3007,
+    3007,
+    3007,
+    3007
+   ]
+  },
+  "code:neulab:minimum-processing-time": {
+   "bucket": "code",
+   "root_id": "code:lc:minimum-processing-time",
+   "pass": 0,
+   "truncated": 2,
+   "fail": 2,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    870,
+    1515,
+    3485,
+    3485
+   ]
+  },
+  "code:neulab:swap-adjacent-in-lr-string": {
+   "bucket": "code",
+   "root_id": "code:lc:swap-adjacent-in-lr-string",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 2,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    1616,
+    2726
+   ],
+   "all_tokens": [
+    1072,
+    1616,
+    1628,
+    2726
+   ]
+  },
+  "code:lcb:3690": {
+   "bucket": "code",
+   "root_id": "code:lc:smallest-substring-with-identical-characters",
+   "pass": 0,
+   "truncated": 3,
+   "fail": 1,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    1097,
+    3725,
+    3725,
+    3725
+   ]
+  },
+  "code:neulab:dungeon-game": {
+   "bucket": "code",
+   "root_id": "code:lc:dungeon-game",
+   "pass": 2,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    1278,
+    2194
+   ],
+   "all_tokens": [
+    1278,
+    2194,
+    3672,
+    3672
+   ]
+  },
+  "code:neulab:construct-target-array-with-multiple-sums": {
+   "bucket": "code",
+   "root_id": "code:lc:construct-target-array-with-multiple-sums",
+   "pass": 0,
+   "truncated": 3,
+   "fail": 1,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3724,
+    3724,
+    3378,
+    3724
+   ]
+  },
+  "code:lcb:3345": {
+   "bucket": "code",
+   "root_id": "code:lc:find-the-sum-of-the-power-of-all-subsequences",
+   "pass": 0,
+   "truncated": 3,
+   "fail": 1,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2864,
+    3476,
+    3476,
+    3476
+   ]
+  },
+  "code:lcb:abc335_a": {
+   "bucket": "code",
+   "root_id": "code:atcoder:abc335_a",
+   "pass": 2,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    3144,
+    3550
+   ],
+   "all_tokens": [
+    3144,
+    3550,
+    3790,
+    3790
+   ]
+  },
+  "code:neulab:maximize-active-section-with-trade-i": {
+   "bucket": "code",
+   "root_id": "code:lc:maximize-active-section-with-trade",
+   "pass": 0,
+   "truncated": 3,
+   "fail": 1,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3385,
+    3436,
+    3436,
+    3436
+   ]
+  },
+  "code:lcb:3527": {
+   "bucket": "code",
+   "root_id": "code:lc:alternating-groups",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3504,
+    3504,
+    3504,
+    3504
+   ]
+  },
+  "code:neulab:count-valid-paths-in-a-tree": {
+   "bucket": "code",
+   "root_id": "code:lc:count-valid-paths-in-a-tree",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3425,
+    3425,
+    3425,
+    3425
+   ]
+  },
+  "code:neulab:longer-contiguous-segments-of-ones-than-zeros": {
+   "bucket": "code",
+   "root_id": "code:lc:longer-contiguous-segments-of-ones-than-zeros",
+   "pass": 2,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    786,
+    1984
+   ],
+   "all_tokens": [
+    786,
+    1984,
+    3614,
+    3614
+   ]
+  },
+  "code:neulab:find-the-key-of-the-numbers": {
+   "bucket": "code",
+   "root_id": "code:lc:find-the-key-of-the-numbers",
+   "pass": 2,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    952,
+    979
+   ],
+   "all_tokens": [
+    952,
+    979,
+    3641,
+    3641
+   ]
+  },
+  "code:lcb:3508": {
+   "bucket": "code",
+   "root_id": "code:lc:number-of-bit-changes-to-make-two-integers-equal",
+   "pass": 2,
+   "truncated": 1,
+   "fail": 1,
+   "error": 0,
+   "kept": 2,
+   "win_tokens": [
+    796,
+    1876
+   ],
+   "all_tokens": [
+    796,
+    898,
+    1876,
+    3779
+   ]
+  },
+  "code:neulab:maximum-subarray-min-product": {
+   "bucket": "code",
+   "root_id": "code:lc:maximum-subarray-min-product",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3609,
+    3609,
+    3609,
+    3609
+   ]
+  },
+  "code:lcb:3631": {
+   "bucket": "code",
+   "root_id": "code:lc:count-k-reducible-numbers-less-than-n",
+   "pass": 0,
+   "truncated": 3,
+   "fail": 1,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    1835,
+    3640,
+    3640,
+    3640
+   ]
+  },
+  "code:lcb:3414": {
+   "bucket": "code",
+   "root_id": "code:lc:find-number-of-ways-to-reach-the-k-th-stair",
+   "pass": 0,
+   "truncated": 3,
+   "fail": 1,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2929,
+    3439,
+    3439,
+    3439
+   ]
+  },
+  "code:lcb:abc382_b": {
+   "bucket": "code",
+   "root_id": "code:atcoder:abc382_b",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3525,
+    3525,
+    3525,
+    3525
+   ]
+  },
+  "code:lcb:3231": {
+   "bucket": "code",
+   "root_id": "code:lc:minimum-number-of-coins-to-be-added",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3544,
+    3544,
+    3544,
+    3544
+   ]
+  },
+  "code:neulab:find-maximum-number-of-string-pairs": {
+   "bucket": "code",
+   "root_id": "code:lc:find-maximum-number-of-string-pairs",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3612,
+    3612,
+    3612,
+    3612
+   ]
+  },
+  "code:lcb:abc399_e": {
+   "bucket": "code",
+   "root_id": "code:atcoder:abc399_e",
+   "pass": 0,
+   "truncated": 4,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    3622,
+    3622,
+    3622,
+    3622
+   ]
+  }
+ }
+}

@@ -1,0 +1,20 @@
+{"item_id": "mhqa:synth:20260302:h3:Qonor_Tankagre", "attempt": 1, "passed": true, "tokens": 593, "latency_ms": 36005, "note": "pred=kasor river", "len_chars": 352, "head": "\n\nBased on the provided facts, Qonor Tankagre works for Anqonor Foundry. The head office of Anqonor Foundry is located in the city of Osnorfa. The text also states that the city of Osnorfa sits on the"}
+{"item_id": "mhqa:synth:20260302:h3:Trapa_Verolu", "attempt": 4, "passed": true, "tokens": 598, "latency_ms": 36309, "note": "pred=nortra river", "len_chars": 455, "head": "\n\nTo answer the question, I first need to identify Trapa Verolu's employer. The text states that \"Trapa Verolu is employed at Brilubri Foundry.\" Next, I must determine the location of Brilubri Foundry"}
+{"item_id": "mhqa:synth:20260302:h2:Calyen_Zelgrecal", "attempt": 1, "passed": false, "tokens": 2048, "latency_ms": 109460, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Sorfa_Greveyen", "attempt": 1, "passed": false, "tokens": 2048, "latency_ms": 109454, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Calyen_Zelgrecal", "attempt": 3, "passed": false, "tokens": 2048, "latency_ms": 109454, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Yenfa_Vecalqo", "attempt": 3, "passed": false, "tokens": 2048, "latency_ms": 109465, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Calyen_Zelgrecal", "attempt": 4, "passed": false, "tokens": 2048, "latency_ms": 109452, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Yenfa_Vecalqo", "attempt": 2, "passed": false, "tokens": 2048, "latency_ms": 109463, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Calyen_Zelgrecal", "attempt": 2, "passed": false, "tokens": 2048, "latency_ms": 109462, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Yenfa_Vecalqo", "attempt": 1, "passed": false, "tokens": 2048, "latency_ms": 109464, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Yenfa_Vecalqo", "attempt": 4, "passed": false, "tokens": 2048, "latency_ms": 109465, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Sorfa_Greveyen", "attempt": 4, "passed": false, "tokens": 2048, "latency_ms": 109493, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h3:Qonor_Tankagre", "attempt": 4, "passed": false, "tokens": 2048, "latency_ms": 109477, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h3:Trapa_Verolu", "attempt": 1, "passed": false, "tokens": 2048, "latency_ms": 109488, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h2:Sorfa_Greveyen", "attempt": 2, "passed": false, "tokens": 2048, "latency_ms": 109510, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h3:Qonor_Tankagre", "attempt": 2, "passed": false, "tokens": 2048, "latency_ms": 109478, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h3:Qonor_Tankagre", "attempt": 3, "passed": false, "tokens": 2048, "latency_ms": 109479, "note": "no-answer-line", "len_chars": 29, "head": "\n\nQonor Tankagre works for An"}
+{"item_id": "mhqa:synth:20260302:h2:Sorfa_Greveyen", "attempt": 3, "passed": false, "tokens": 2048, "latency_ms": 109492, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h3:Trapa_Verolu", "attempt": 3, "passed": false, "tokens": 2048, "latency_ms": 109485, "note": "no-answer-line", "len_chars": 0, "head": ""}
+{"item_id": "mhqa:synth:20260302:h3:Trapa_Verolu", "attempt": 2, "passed": false, "tokens": 2048, "latency_ms": 109510, "note": "no-answer-line", "len_chars": 0, "head": ""}

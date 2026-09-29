@@ -1,0 +1,109 @@
+2026-09-28 19:34:24,179 INFO prepare v1 | model Qwen/Qwen3.5-4B | cutoff 2026-03-02 | leetcode margin 7d | holdout frac 0.40 | seed grpo-local:qwen3.5-4b:2026-03-02
+2026-09-28 19:34:24,179 INFO == math: loading sources
+2026-09-28 19:34:24,883 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2023_I "HTTP/1.1 200 OK"
+2026-09-28 19:34:24,982 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2023_I/tree/4e55d1bf38f277ab89ba7fc987f76604a6c3877c?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:25,089 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2023_I/xet-read-token/4e55d1bf38f277ab89ba7fc987f76604a6c3877c "HTTP/1.1 200 OK"
+2026-09-28 19:34:26,407 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2023_II "HTTP/1.1 200 OK"
+2026-09-28 19:34:26,496 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2023_II/tree/bcfb17ba39a7ac54545c749c9f57b836f23e070f?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:26,571 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2023_II/xet-read-token/bcfb17ba39a7ac54545c749c9f57b836f23e070f "HTTP/1.1 200 OK"
+2026-09-28 19:34:27,366 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2024_I "HTTP/1.1 200 OK"
+2026-09-28 19:34:27,462 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2024_I/tree/ea5b061c3e8039dc9858defaafc407d04b995e9f?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:27,537 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2024_I/xet-read-token/ea5b061c3e8039dc9858defaafc407d04b995e9f "HTTP/1.1 200 OK"
+2026-09-28 19:34:28,285 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2024_II "HTTP/1.1 200 OK"
+2026-09-28 19:34:28,357 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2024_II/tree/29d5d31e9b46e215fc24d9b2a3047506823dd101?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:28,451 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2024_II/xet-read-token/29d5d31e9b46e215fc24d9b2a3047506823dd101 "HTTP/1.1 200 OK"
+2026-09-28 19:34:29,263 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2025_I "HTTP/1.1 200 OK"
+2026-09-28 19:34:29,346 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2025_I/tree/65981f72a5ac5bd4d9aaab2cb3adcc8955c95873?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:29,422 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2025_I/xet-read-token/65981f72a5ac5bd4d9aaab2cb3adcc8955c95873 "HTTP/1.1 200 OK"
+2026-09-28 19:34:30,195 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2025_II "HTTP/1.1 200 OK"
+2026-09-28 19:34:30,368 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2025_II/tree/68558a4580ae339ef7473f588f44ac41571749b8?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:30,449 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2025_II/xet-read-token/68558a4580ae339ef7473f588f44ac41571749b8 "HTTP/1.1 200 OK"
+2026-09-28 19:34:31,266 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2025 "HTTP/1.1 200 OK"
+2026-09-28 19:34:31,354 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2025/tree/c94da77eb22bbd6439e62a323bec18493a421302?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:31,428 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2025/xet-read-token/c94da77eb22bbd6439e62a323bec18493a421302 "HTTP/1.1 200 OK"
+2026-09-28 19:34:32,126 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2026_I "HTTP/1.1 200 OK"
+2026-09-28 19:34:32,373 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2026_I/tree/37806d403fa0c9ae914ee7d7da215cf2a3c7a94d?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:32,444 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2026_I/xet-read-token/37806d403fa0c9ae914ee7d7da215cf2a3c7a94d "HTTP/1.1 200 OK"
+2026-09-28 19:34:33,159 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2026 "HTTP/1.1 200 OK"
+2026-09-28 19:34:33,237 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2026/tree/d2de22f3c656b4f56cf8981212186377d1e23bc3?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:33,311 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/aime_2026/xet-read-token/d2de22f3c656b4f56cf8981212186377d1e23bc3 "HTTP/1.1 200 OK"
+2026-09-28 19:34:34,018 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2023 "HTTP/1.1 200 OK"
+2026-09-28 19:34:34,108 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2023/tree/43d9106e3ae5733bb57be0322b3e855e6b2cd4ea?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:34,182 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2023/xet-read-token/43d9106e3ae5733bb57be0322b3e855e6b2cd4ea "HTTP/1.1 200 OK"
+2026-09-28 19:34:34,951 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2024 "HTTP/1.1 200 OK"
+2026-09-28 19:34:35,030 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2024/tree/b3cf7fb48814f76142d0847003a5aac0876f3bf4?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:35,115 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2024/xet-read-token/b3cf7fb48814f76142d0847003a5aac0876f3bf4 "HTTP/1.1 200 OK"
+2026-09-28 19:34:35,865 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2025 "HTTP/1.1 200 OK"
+2026-09-28 19:34:35,961 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2025/tree/6fdc4277120810ff75aa22d2d5489b91f7a262a1?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:36,035 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2025/xet-read-token/6fdc4277120810ff75aa22d2d5489b91f7a262a1 "HTTP/1.1 200 OK"
+2026-09-28 19:34:36,854 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2026 "HTTP/1.1 200 OK"
+2026-09-28 19:34:36,973 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2026/tree/02fba4f74d8e68e73e66a02d540fd979c05c274c?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:37,047 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_feb_2026/xet-read-token/02fba4f74d8e68e73e66a02d540fd979c05c274c "HTTP/1.1 200 OK"
+2026-09-28 19:34:37,804 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_nov_2025 "HTTP/1.1 200 OK"
+2026-09-28 19:34:37,897 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_nov_2025/tree/118dbfb45c4c9467c672268ed55166642897aa46?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:37,961 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/hmmt_nov_2025/xet-read-token/118dbfb45c4c9467c672268ed55166642897aa46 "HTTP/1.1 200 OK"
+2026-09-28 19:34:38,678 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/brumo_2025 "HTTP/1.1 200 OK"
+2026-09-28 19:34:38,765 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/brumo_2025/tree/6de9bc0987f5710c6376ee980e1483dbeb55cfda?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:38,847 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/brumo_2025/xet-read-token/6de9bc0987f5710c6376ee980e1483dbeb55cfda "HTTP/1.1 200 OK"
+2026-09-28 19:34:39,605 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/cmimc_2025 "HTTP/1.1 200 OK"
+2026-09-28 19:34:39,693 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/cmimc_2025/tree/8f27517ce4ad1d05e023c0e7eca4344754ba2a04?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:39,768 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/cmimc_2025/xet-read-token/8f27517ce4ad1d05e023c0e7eca4344754ba2a04 "HTTP/1.1 200 OK"
+2026-09-28 19:34:40,660 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/smt_2025 "HTTP/1.1 200 OK"
+2026-09-28 19:34:40,769 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/smt_2025/tree/d8e99d83f1583842f46d4953cd960eea5d887e45?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:40,838 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/smt_2025/xet-read-token/d8e99d83f1583842f46d4953cd960eea5d887e45 "HTTP/1.1 200 OK"
+2026-09-28 19:34:41,650 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/apex_2025 "HTTP/1.1 200 OK"
+2026-09-28 19:34:41,736 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/apex_2025/tree/ac8a641db12cc87be39e61ea89f2e04c80c5f2e7?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:41,931 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/apex_2025/xet-read-token/ac8a641db12cc87be39e61ea89f2e04c80c5f2e7 "HTTP/1.1 200 OK"
+2026-09-28 19:34:42,690 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/apex-shortlist "HTTP/1.1 200 OK"
+2026-09-28 19:34:42,780 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/apex-shortlist/tree/f3efdf224ef665f129ddaae37699f6098c65781b?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:42,852 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/apex-shortlist/xet-read-token/f3efdf224ef665f129ddaae37699f6098c65781b "HTTP/1.1 200 OK"
+2026-09-28 19:34:43,554 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-1225 "HTTP/1.1 200 OK"
+2026-09-28 19:34:43,705 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-1225/tree/90c60aa1eadbb72168640169d82154b079cdeaac?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:43,785 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-1225/xet-read-token/90c60aa1eadbb72168640169d82154b079cdeaac "HTTP/1.1 200 OK"
+2026-09-28 19:34:44,506 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0126 "HTTP/1.1 200 OK"
+2026-09-28 19:34:44,587 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0126/tree/bac939ba603c93f905aa48072980ea681a2824cd?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:44,658 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0126/xet-read-token/bac939ba603c93f905aa48072980ea681a2824cd "HTTP/1.1 200 OK"
+2026-09-28 19:34:45,335 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0226 "HTTP/1.1 200 OK"
+2026-09-28 19:34:45,419 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0226/tree/a038fd1b01405ea1102e165b6ef43693fd16ca6b?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:45,498 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0226/xet-read-token/a038fd1b01405ea1102e165b6ef43693fd16ca6b "HTTP/1.1 200 OK"
+2026-09-28 19:34:46,366 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0326 "HTTP/1.1 200 OK"
+2026-09-28 19:34:46,468 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0326/tree/14ff32983ae4c72b75fb64eba750f3c27f46607a?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:46,545 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0326/xet-read-token/14ff32983ae4c72b75fb64eba750f3c27f46607a "HTTP/1.1 200 OK"
+2026-09-28 19:34:47,252 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0426 "HTTP/1.1 200 OK"
+2026-09-28 19:34:47,342 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0426/tree/fc2cb715b5855c100142e4c05a8042351c21f3c8?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:47,408 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0426/xet-read-token/fc2cb715b5855c100142e4c05a8042351c21f3c8 "HTTP/1.1 200 OK"
+2026-09-28 19:34:48,118 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0526 "HTTP/1.1 200 OK"
+2026-09-28 19:34:48,203 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0526/tree/69f701c7f266bfba235ef302ff9b19093f7455bb?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:48,275 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0526/xet-read-token/69f701c7f266bfba235ef302ff9b19093f7455bb "HTTP/1.1 200 OK"
+2026-09-28 19:34:49,111 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0626 "HTTP/1.1 200 OK"
+2026-09-28 19:34:49,207 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0626/tree/dca0d771ab20c1b8e8c50d0921bf693f7bfe663d?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:49,284 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0626/xet-read-token/dca0d771ab20c1b8e8c50d0921bf693f7bfe663d "HTTP/1.1 200 OK"
+2026-09-28 19:34:50,170 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0826 "HTTP/1.1 200 OK"
+2026-09-28 19:34:50,294 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0826/tree/977a3a0083198e11ac4f20fe79288351cebd6281?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:50,368 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-0826/xet-read-token/977a3a0083198e11ac4f20fe79288351cebd6281 "HTTP/1.1 200 OK"
+2026-09-28 19:34:51,385 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath "HTTP/1.1 200 OK"
+2026-09-28 19:34:51,483 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath/tree/f0a9cf83259855c31b37168eca646ec6f0e2598c?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:51,554 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath/xet-read-token/f0a9cf83259855c31b37168eca646ec6f0e2598c "HTTP/1.1 200 OK"
+2026-09-28 19:34:52,429 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-training "HTTP/1.1 200 OK"
+2026-09-28 19:34:52,524 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-training/tree/df8124014f27975d4457d02c95c29b5941e58130?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-09-28 19:34:52,595 INFO HTTP Request: GET https://huggingface.co/api/datasets/MathArena/arxivmath-training/xet-read-token/df8124014f27975d4457d02c95c29b5941e58130 "HTTP/1.1 200 OK"
+2026-09-28 19:35:12,468 WARNING Timeout is disabled as parsing_timeout is None or <= 0, you must provide                         the logic for timeout interuption yourself to prevent code getting stuck.
+2026-09-28 19:35:25,548 INFO   math: 3495 records loaded
+2026-09-28 19:35:25,940 INFO   clustering: 3495 records -> 3265 root tasks | lineage merges 175 | skeleton pairs tested 106, merged 86 (tau 0.70, k 5) | oversized LSH buckets skipped 0 | largest roots [9, 9, 9, 9, 8]
+2026-09-28 19:35:26,048 INFO     seal.py| SEALED math-v1 (eval): 73 root tasks / 73 items
+2026-09-28 19:35:26,048 INFO     seal.py|   manifest_sha256 ae85b44aec08de01c2f92bc94378b0d8e2ea73ac55c629e483f17c7ebb66ada7
+2026-09-28 19:35:26,048 INFO     seal.py|   merkle_root     ea3cff7fe0363473acaf9090b41a1b8731e09896d644d1e321d547028b9fd9f5
+2026-09-28 19:35:26,048 INFO     seal.py|   ledger_entry    6c2fff3238167d8a3eac68bb435a9eb88c1a6aa04a0b519a695a25da9f34aa58
+2026-09-28 19:35:26,149 INFO     seal.py| OK   holdout_sha256
+2026-09-28 19:35:26,149 INFO     seal.py|   OK   roots_sha256
+2026-09-28 19:35:26,149 INFO     seal.py|   OK   root_hashes
+2026-09-28 19:35:26,149 INFO     seal.py|   OK   merkle_root
+2026-09-28 19:35:26,149 INFO     seal.py|   OK   ledger_chain
+2026-09-28 19:35:26,149 INFO     seal.py|   OK   manifest_in_ledger
+2026-09-28 19:35:26,149 INFO     seal.py| manifest_sha256 ae85b44aec08de01c2f92bc94378b0d8e2ea73ac55c629e483f17c7ebb66ada7
+2026-09-28 19:35:26,297 INFO     seal.py| CLEAN: 3254 train records vs math-v1 (0 hits) -- logged to SEALS.log
+2026-09-28 19:35:26,403 INFO     seal.py| CLEAN: 112 train records vs math-v1 (0 hits) -- logged to SEALS.log
+2026-09-28 19:35:26,403 INFO   math: train 3254 | eval 112 | holdout 73 (roots {'train': 3079, 'eval': 112, 'holdout': 73}) | 62s
+2026-09-28 19:35:26,403 INFO   math drops: {'post-variant-of-pre-root': 55, 'ambiguous-date-root': 1}
+2026-09-28 19:35:26,406 INFO eval set -> C:\Users\juxxs\vllm\grpo-local\evals\data\sets\post_cutoff_v1.json ({'math': 112})
+2026-09-28 19:35:26,450 INFO done -> RULES.md table updated, summary logs/prepare-20260928T223424Z.json

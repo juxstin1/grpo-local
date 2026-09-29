@@ -24,6 +24,47 @@ Every cycle changes ONE thing. Every claim of "it got better" must be backed by 
 
 ---
 
+## Training pipeline (canon, decided 2026-09-28)
+
+Change only by explicit decision; note the date and why.
+
+**Order**
+1. **Baseline** first. The failure type picks the tool:
+   - *Format / termination* (right idea, wrong shape, no answer line, runs out of budget) → SFT on own wins.
+   - *Sometimes right* → straight to GRPO.
+   - *Never right* → make the task easier first (fewer hops, easier items). Own-wins SFT can't help with no wins.
+2. **SFT on own wins** (rejection-sampled): keep only graded wins that finish under budget, max 2 per root task. Small: a few hundred records, 1 epoch, low LR. If wins are rare on the real items, collect on easier generator settings; "wrap up and answer" transfers.
+   - **Salvage** capped failures (collector saves them to `<name>.fail.jsonl`): cut the thinking at a conclusion point, insert only `</think>`, let the model generate its own answer from there, keep it only if that answer grades correct. The ending is the model's own tokens except one inserted stop; a cut made mid-hypothesis filters itself out. Never write the answer line ourselves. Tag records `salvaged` with the cut index, so natural vs natural+salvaged can be compared.
+3. **Re-baseline** on the same items. SFT should cut cap-hits without dropping accuracy.
+4. *Optional:* if SFT helped but wins are still rare, collect again with the SFT'd model and SFT again.
+5. **GRPO** for checkable buckets (code, multi-hop, find-and-fix). Rollouts are collected live during GRPO, graded, and learned from immediately. No separate collection step.
+6. **DPO**, later and separate, only for things with no checker (summary quality, style), from human-picked pairs.
+
+**Buckets**
+
+| Bucket | Checker | SFT | GRPO | DPO |
+|---|---|---|---|---|
+| Code | tests pass | own wins | yes | - |
+| Multi-hop (invented world) | full chain, every hop exact | own wins | yes | - |
+| Find-and-fix (injected bugs) | tests pass | own wins | yes | - |
+| Summarization | behavior only | behavior filter | **no** | quality, later |
+
+- **Find-and-fix guard:** keep an injected bug only if the original passes every test **and** the bugged version fails at least one, or "no change" counts as a fix.
+- **Summarization:** baseline first (Qwen's post-training likely covers it); SFT only on a specific observed failure. The SFT filter checks behavior, not quality: finished under budget, requested format and length, every name and number appears in the source. Never use it as a GRPO reward; it is easy to game.
+
+**Rules**
+- **One budget:** 4096 tokens total (prompt + completion, thinking included) for eval, SFT collection, and GRPO. Eval: `--total-cap 4096`.
+- **Thinking on** everywhere.
+- **Headline metrics:** per-attempt accuracy and cap-hit %, per bucket, never blended. pass@k is secondary. Multi-hop is reported next to its guess floor.
+- **Eval items:** post-cutoff (published on or after 2026-03-02 for Qwen3.5) or contamination-free by construction (invented worlds). 5 verified items per bucket.
+- **Split by root task**, never by difficulty; the leak gate fails closed (`sft/collect.py`, `sft/train_sft.py`, `evals/holdout/seal.py`).
+- **Token-exact SFT:** train on the raw `completion_ids` (EOS included), never re-tokenized text. The loss covers completion tokens only, via the same `rl._masked_logprobs` GRPO uses.
+- **One phase on the GPU at a time:** stop vLLM before training; for eval, start vLLM and hot-load adapters with `/v1/load_lora_adapter`.
+
+**Harness backlog (priority order):** (1) one budget constant read by eval, collection, and GRPO; (2) cap-hit % in every training log; (3) `graders.make_task` wired into `train.py`; (4) off-task canary of 5 tool-calling items (When2Call/BFCL) run with every eval; (5) training refuses to start while vLLM or a stray process holds VRAM, and names it.
+
+---
+
 ## Token + loss invariants (the silent-bug zone)
 
 Check these before any real run. Each one fails silently.

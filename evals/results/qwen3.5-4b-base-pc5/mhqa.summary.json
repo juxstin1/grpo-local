@@ -1,0 +1,14 @@
+{
+ "model": "Qwen/Qwen3.5-4B",
+ "bucket": "mhqa",
+ "n": 5,
+ "pass4_items": 2,
+ "accuracy": 0.4,
+ "per_item": {
+  "mhqa:synth:20260302:h2:Calyen_Zelgrecal": 0,
+  "mhqa:synth:20260302:h2:Sorfa_Greveyen": 0,
+  "mhqa:synth:20260302:h2:Yenfa_Vecalqo": 0,
+  "mhqa:synth:20260302:h3:Qonor_Tankagre": 1,
+  "mhqa:synth:20260302:h3:Trapa_Verolu": 1
+ }
+}

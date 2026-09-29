@@ -6,7 +6,7 @@ import torch
 @dataclass
 class Config:
     # --- model -----------------------------------------------------------
-    model_name: str = "Qwen/Qwen2.5-0.5B-Instruct"
+    model_name: str = "Qwen/Qwen3.5-4B"
     dtype: str = "bfloat16"          # bfloat16 | float32 (float32 for CPU)
     device: str = "auto"             # auto | cuda | cpu
 
@@ -15,6 +15,7 @@ class Config:
     lora_r: int = 8
     lora_alpha: int = 16
     lora_dropout: float = 0.0
+    grad_checkpointing: bool = True  # recompute activations in backward; VRAM >> speed here
 
     # --- optimizer ----------------------------------------------------------
     lr: float = 5e-5
@@ -28,10 +29,12 @@ class Config:
 
     temperature: float = 0.8
     top_p: float = 0.95
-    max_new_tokens: int = 96
+    max_new_tokens: int = 3072       # per turn; thinking used ~1k on 17*23, 256 truncated everything
+    max_seq_tokens: int = 6144       # whole trajectory (prompt+turns+obs); bounds VRAM, see vram.py
     max_turns: int = 6               # tool rounds before we force-stop
+    thinking: bool = True            # Qwen3.5 thinking mode; reasoning is never scored
 
-    raw_text: bool = True            # False = chat-template segments (verify first)
+    raw_text: bool = False           # True = raw segments; False = Qwen chat template (verified)
 
     @property
     def torch_dtype(self) -> torch.dtype:
@@ -44,5 +47,10 @@ class Config:
         return "cuda" if torch.cuda.is_available() else "cpu"
 
     @property
-    def lora_targets(self) -> list[str]:
-        return ["q_proj", "k_proj", "v_proj", "o_proj"]
+    def lora_targets(self) -> str:
+        # Qwen3.5 is hybrid: only 8/32 layers have q/k/v/o (full attention); the other
+        # 24 are linear attention (in_proj_qkv/in_proj_z/out_proj). MLP is in all 32.
+        # Regex limits LoRA to the language model (not the vision tower). All of these
+        # are LoRA-loadable in vLLM (packed as qkv_proj / gate_up_proj / in_proj_qkvz).
+        return (r".*language_model.*\.(q_proj|k_proj|v_proj|o_proj|in_proj_qkv|in_proj_z|out_proj"
+                r"|gate_proj|up_proj|down_proj)")

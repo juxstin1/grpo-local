@@ -1,0 +1,13 @@
+2026-09-28 19:37:57,295 INFO prepare v1 | model Qwen/Qwen3.5-4B | cutoff 2026-03-02 | leetcode margin 7d | holdout frac 0.40 | seed grpo-local:qwen3.5-4b:2026-03-02
+2026-09-28 19:37:57,297 INFO == code: loading sources
+2026-09-28 19:38:54,786 INFO   code: 7502 records loaded
+2026-09-28 19:38:56,802 INFO   clustering: 7502 records -> 4214 root tasks | lineage merges 3270 | skeleton pairs tested 4063, merged 2971 (tau 0.70, k 5) | oversized LSH buckets skipped 0 | largest roots [11, 10, 10, 9, 9]
+2026-09-28 19:38:56,852 INFO   code-v1: holdout already sealed with identical roots; verifying
+2026-09-28 19:38:56,903 INFO     seal.py| File "C:\Users\juxxs\vllm\grpo-local\evals\holdout\seal.py", line 171
+2026-09-28 19:38:56,903 INFO     seal.py|     for ln, line in enumerate(raw.decode("utf-8").split("\n"), 1)  # not splitlines(): JSON strings may hold U+2028/0x1c:
+2026-09-28 19:38:56,903 INFO     seal.py|                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-09-28 19:38:56,903 INFO     seal.py| SyntaxError: expected ':'
+2026-09-28 19:39:06,110 INFO     seal.py| File "C:\Users\juxxs\vllm\grpo-local\evals\holdout\seal.py", line 171
+2026-09-28 19:39:06,112 INFO     seal.py|     for ln, line in enumerate(raw.decode("utf-8").split("\n"), 1)  # not splitlines(): JSON strings may hold U+2028/0x1c:
+2026-09-28 19:39:06,112 INFO     seal.py|                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-09-28 19:39:06,112 INFO     seal.py| SyntaxError: expected ':'

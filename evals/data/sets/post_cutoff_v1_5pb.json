@@ -1,0 +1,290 @@
+{
+ "items": {
+  "code": [
+   {
+    "uid": "code:leetcode:minimum-generations-to-target-point",
+    "dataset": "code",
+    "source": "whiskwhite/leetcode-complete",
+    "root_id": "code:lc:minimum-generations-to-target-point",
+    "first_published": "2026-05-09",
+    "date_basis": "leetcode",
+    "prompt": "You are given a 2D integer array points where points[i] = [xi, yi, zi] represents a point in 3D space, and an integer array target representing a target point.\n\nDefine generation 0 as the initial list of points. For each integer k >= 1, form generation k as follows:\n\n\t- Consider every pair of two distinct points a = [x1, y1, z1] and b = [x2, y2, z2] taken from all points produced in generations 0 through k - 1.\n\n\t- For each such pair, compute c = [floor((x1 + x2) / 2), floor((y1 + y2) / 2), floor((z1 + z2) / 2)] and collect every such c into a generation k.\n\n\t- All points in the generation k are produced simultaneously from points in generations 0 through​​​​​​​ k - 1.\n\n\t- After generation k is formed, the points in the generation k are considered available for forming later generations.\n\nReturn the smallest integer k such that the target appears in one of the generations 0 through k. If the target is already in the initial points, return 0. If it is impossible to obtain the target, return -1.\n\nNotes:\n\n\t- floor denotes rounding down to the nearest integer.\n\n\t- \"Two distinct points\" means the two chosen points must have different (x, y, z) coordinates. A point cannot be paired with itself, and pairing two points with identical coordinates is not possible.\n\n \n\nExample 1:\n\nInput: points = [[0,0,0],[6,6,6]], target = [3,3,3]\n\nOutput: 1\n\nExplanation:\n\n\t- Generation 0: The initial points = [[0, 0, 0], [6, 6, 6]].\n\n\t- The target = [3, 3, 3] does not exist in generation 0.\n\n\t- Generation 1: For each pair of points in generation 0, we create new points.\n\t\n\t\t- Using [0, 0, 0] and [6, 6, 6], we generate [3, 3, 3].\n\n\t\n\n\t\n\n\t- After generation 1, points = [[0, 0, 0], [6, 6, 6], [3, 3, 3]].\n\n\t- The target = [3, 3, 3] is found in generation 1, so the smallest k is 1.\n\nExample 2:\n\nInput: points = [[0,0,0],[5,5,5]], target = [1,1,1]\n\nOutput: 2\n\nExplanation:\n\n\t- Generation 0: The initial points = [[0, 0, 0], [5, 5, 5]].\n\n\t- The target = [1, 1, 1] does not exist in generation 0.\n\n\t- Generation 1: For each pair of points in generation 0, we create new points.\n\t\n\t\t- Using [0, 0, 0] and [5, 5, 5], we generate [2, 2, 2].\n\n\t\n\n\t\n\n\t- After generation 1, points = [[0, 0, 0], [5, 5, 5], [2, 2, 2]].\n\n\t- Generation 2: For each pair of points available after generation 1, we create new points.\n\t\n\t\t- Using [0, 0, 0] and [5, 5, 5], we generate [2, 2, 2].\n\n\t\t- Using [0, 0, 0] and [2, 2, 2], we generate [1, 1, 1].\n\n\t\t- Using [5, 5, 5] and [2, 2, 2], we generate [3, 3, 3].\n\n\t\n\n\t\n\n\t- After generation 2, points = [[0, 0, 0], [5, 5, 5], [2, 2, 2], [1, 1, 1], [3, 3, 3]].\n\n\t- The target = [1, 1, 1] is found in generation 2, so the smallest k is 2.\n\nExample 3:\n\nInput: points = [[0,0,0],[2,2,2],[3,3,3]], target = [2,2,2]\n\nOutput: 0\n\nExplanation:\n\n\t- Generation 0: The initial points = [[0, 0, 0], [2, 2, 2], [3, 3, 3]].\n\n\t- The target = [2, 2, 2] already exists in generation 0, so the smallest k is 0.\n\nExample 4:\n\nInput: points = [[1,2,3]], target = [5,5,5]\n\nOutput: -1\n\nExplanation:\n\n\t- Only one initial point is available, so no new points can be generated.\n\n\t- Therefore, the target cannot be obtained, and the answer is -1.\n\n \n\nConstraints:\n\n\t- 1 <= points.length <= 20\n\n\t- points[i] = [xi, yi, zi​​​​​​​]\n\n\t- 0 <= xi, yi, zi <= 6\n\n\t- target.length == 3\n\n\t- ​​​​​​​0 <= target[i] <= 6\n\n\t- The initial set of points contains no duplicates.\n\nStarter code:\n```python\nclass Solution:\n    def minGenerations(self, points: List[List[int]], target: List[int]) -> int:\n```",
+    "tests": {
+     "kind": "functional",
+     "entry": "Solution.minGenerations",
+     "cases": [
+      {
+       "input": "[[0,0,0],[6,6,6]]\n[3,3,3]",
+       "output": "1"
+      },
+      {
+       "input": "[[0,0,0],[5,5,5]]\n[1,1,1]",
+       "output": "2"
+      },
+      {
+       "input": "[[0,0,0],[2,2,2],[3,3,3]]\n[2,2,2]",
+       "output": "0"
+      },
+      {
+       "input": "[[1,2,3]]\n[5,5,5]",
+       "output": "-1"
+      }
+     ]
+    },
+    "tests_basis": "statement examples; oracle output == stated output",
+    "id": "code:leetcode:minimum-generations-to-target-point"
+   },
+   {
+    "uid": "code:leetcode:minimize-the-maximum-waiting-time-at-synchronized-traffic-lights",
+    "dataset": "code",
+    "source": "whiskwhite/leetcode-complete",
+    "root_id": "code:lc:minimize-the-maximum-waiting-time-at-synchronized-traffic-lights",
+    "first_published": "2026-08-16",
+    "date_basis": "leetcode",
+    "prompt": "You are given an integer period and an integer array lights, where lights[i] is the duration, in seconds, of the green phase of the i^th traffic light.\n\nAt time 0, every traffic light starts at the beginning of its green phase. Their cycles are synchronized: every traffic light starts a new cycle at the same time, and every cycle lasts exactly period seconds. Therefore, the red phase of the i^th traffic light lasts for period - lights[i] seconds.\n\nYou are also given an integer array arrivalTime, where arrivalTime[j] is the arrival time, in seconds, of the j^th car.\n\nEach car must be assigned to exactly one traffic light. Multiple cars may be assigned to the same traffic light. Any number of cars may cross the same traffic light simultaneously while it is green. Cars do not block or delay one another.\n\nFor a car j assigned to the i^th traffic light, let r = arrivalTime[j] % period. If r < lights[i], its waiting time is 0. Otherwise, its waiting time is period - r.\n\nThe penalty of an assignment is the maximum waiting time among all cars.\n\nReturn an integer denoting the minimum possible penalty.\n\n \n\nExample 1:\n\nInput: period = 8, lights = [2,3], arrivalTime = [2,5,8,11]\n\nOutput: 5\n\nExplanation:\n\nOne optimal solution is:\n\n\t- Assign arrivalTime[0] to the traffic light with lights[1] = 3. Here, r = 2 % 8 = 2. Since 2 < 3, the waiting time is 0.\n\n\t- Assign arrivalTime[1] to the traffic light with lights[0] = 2. Here, r = 5 % 8 = 5. Since 5 >= 2, the waiting time is 8 - 5 = 3.\n\n\t- Assign arrivalTime[2] to the traffic light with lights[0] = 2. Here, r = 8 % 8 = 0. Since 0 < 2, the waiting time is 0.\n\n\t- Assign arrivalTime[3] to the traffic light with lights[0] = 2. Here, r = 11 % 8 = 3. Since 3 >= 2, the waiting time is 8 - 3 = 5.\n\nThe penalty of this assignment is 5, which is the minimum possible. Other optimal assignments may exist.\n\nExample 2:\n\nInput: period = 10, lights = [3,6,8], arrivalTime = [4,9,15]\n\nOutput: 1\n\nExplanation:\n\nOne optimal solution is:\n\n\t- Assign arrivalTime[0] to the traffic light with lights[2] = 8. Here, r = 4 % 10 = 4. Since 4 < 8, the waiting time is 0.\n\n\t- Assign arrivalTime[1] to the traffic light with lights[2] = 8. Here, r = 9 % 10 = 9. Since 9 >= 8, the waiting time is 10 - 9 = 1.\n\n\t- Assign arrivalTime[2] to the traffic light with lights[2] = 8. Here, r = 15 % 10 = 5. Since 5 < 8, the waiting time is 0.\n\nThe penalty of this assignment is 1, which is the minimum possible.\n\nExample 3:\n\nInput: period = 5, lights = [2], arrivalTime = [2,3,4,5,6]\n\nOutput: 3\n\nExplanation:\n\nOne optimal solution is:\n\n\t- Assign arrivalTime[0] to the traffic light with lights[0] = 2. Here, r = 2 % 5 = 2. Since 2 >= 2, the waiting time is 5 - 2 = 3.\n\n\t- Assign arrivalTime[1] to the traffic light with lights[0] = 2. Here, r = 3 % 5 = 3. Since 3 >= 2, the waiting time is 5 - 3 = 2.\n\n\t- Assign arrivalTime[2] to the traffic light with lights[0] = 2. Here, r = 4 % 5 = 4. Since 4 >= 2, the waiting time is 5 - 4 = 1.\n\n\t- Assign arrivalTime[3] to the traffic light with lights[0] = 2. Here, r = 5 % 5 = 0. Since 0 < 2, the waiting time is 0.\n\n\t- Assign arrivalTime[4] to the traffic light with lights[0] = 2. Here, r = 6 % 5 = 1. Since 1 < 2, the waiting time is 0.\n\nThe penalty of this assignment is 3, which is the minimum possible.\n\n \n\nConstraints:\n\n\t- 2 <= period <= 10^9\n\n\t- 1 <= lights.length <= 10^4\n\n\t- 1 <= lights[i] <= period - 1\n\n\t- 1 <= arrivalTime.length <= 10^5\n\n\t- 1 <= arrivalTime[i] <= 10^9\n\nStarter code:\n```python\nclass Solution:\n    def minPenalty(self, period: int, lights: list[int], arrivalTime: list[int]) -> int:\n```",
+    "tests": {
+     "kind": "functional",
+     "entry": "Solution.minPenalty",
+     "cases": [
+      {
+       "input": "8\n[2,3]\n[2,5,8,11]",
+       "output": "5"
+      },
+      {
+       "input": "10\n[3,6,8]\n[4,9,15]",
+       "output": "1"
+      },
+      {
+       "input": "5\n[2]\n[2,3,4,5,6]",
+       "output": "3"
+      }
+     ]
+    },
+    "tests_basis": "statement examples; oracle output == stated output",
+    "id": "code:leetcode:minimize-the-maximum-waiting-time-at-synchronized-traffic-lights"
+   },
+   {
+    "uid": "code:leetcode:sort-vowels-by-frequency",
+    "dataset": "code",
+    "source": "whiskwhite/leetcode-complete",
+    "root_id": "code:lc:sort-vowels-by-frequency",
+    "first_published": "2026-04-26",
+    "date_basis": "leetcode",
+    "prompt": "You are given a string s consisting of lowercase English characters.\n\nRearrange only the vowels in the string so that they appear in non-increasing order of their frequency.\n\nIf multiple vowels have the same frequency, order them by the position of their first occurrence in s.\n\nReturn the modified string.\n\nVowels are 'a', 'e', 'i', 'o', and 'u'.\n\nThe frequency of a letter is the number of times it occurs in the string.\n\n \n\nExample 1:\n\nInput: s = \"leetcode\"\n\nOutput: \"leetcedo\"\n\nExplanation:​​​​​​​\n\n\t- Vowels in the string are ['e', 'e', 'o', 'e'] with frequencies: e = 3, o = 1.\n\n\t- Sorting in non-increasing order of frequency and placing them back into the vowel positions results in \"leetcedo\".\n\nExample 2:\n\nInput: s = \"aeiaaioooa\"\n\nOutput: \"aaaaoooiie\"\n\nExplanation:​​​​​​​\n\n\t- Vowels in the string are ['a', 'e', 'i', 'a', 'a', 'i', 'o', 'o', 'o', 'a'] with frequencies: a = 4, o = 3, i = 2, e = 1.\n\n\t- Sorting them in non-increasing order of frequency and placing them back into the vowel positions results in \"aaaaoooiie\".\n\nExample 3:\n\nInput: s = \"baeiou\"\n\nOutput: \"baeiou\"\n\nExplanation:\n\n\t- Each vowel appears exactly once, so all have the same frequency.\n\n\t- Thus, they retain their relative order based on first occurrence, and the string remains unchanged.\n\n \n\nConstraints:\n\n\t- 1 <= s.length <= 10^5\n\n\t- s consists of lowercase English letters\n\nStarter code:\n```python\nclass Solution:\n    def sortVowels(self, s: str) -> str:\n```",
+    "tests": {
+     "kind": "functional",
+     "entry": "Solution.sortVowels",
+     "cases": [
+      {
+       "input": "\"leetcode\"",
+       "output": "\"leetcedo\""
+      },
+      {
+       "input": "\"aeiaaioooa\"",
+       "output": "\"aaaaoooiie\""
+      },
+      {
+       "input": "\"baeiou\"",
+       "output": "\"baeiou\""
+      }
+     ]
+    },
+    "tests_basis": "statement examples; oracle output == stated output",
+    "id": "code:leetcode:sort-vowels-by-frequency"
+   },
+   {
+    "uid": "code:leetcode:count-good-subarrays",
+    "dataset": "code",
+    "source": "whiskwhite/leetcode-complete",
+    "root_id": "code:lc:count-good-subarrays",
+    "first_published": "2026-03-22",
+    "date_basis": "leetcode",
+    "prompt": "You are given an integer array nums.\n\nA subarray is called good if the bitwise OR of all its elements is equal to at least one element present in that subarray.\n\nReturn the number of good subarrays in nums.\n\nHere, the bitwise OR of two integers a and b is denoted by a | b.\n\n \n\nExample 1:\n\nInput: nums = [4,2,3]\n\nOutput: 4\n\nExplanation:\n\nThe subarrays of nums are:\n\n\t\n\t\t\n\t\t\tSubarray\n\t\t\tBitwise OR\n\t\t\tPresent in Subarray\n\t\t\n\t\t\n\t\t\t[4]\n\t\t\t4 = 4\n\t\t\tYes\n\t\t\n\t\t\n\t\t\t[2]\n\t\t\t2 = 2\n\t\t\tYes\n\t\t\n\t\t\n\t\t\t[3]\n\t\t\t3 = 3\n\t\t\tYes\n\t\t\n\t\t\n\t\t\t[4, 2]\n\t\t\t4 | 2 = 6\n\t\t\tNo\n\t\t\n\t\t\n\t\t\t[2, 3]\n\t\t\t2 | 3 = 3\n\t\t\tYes\n\t\t\n\t\t\n\t\t\t[4, 2, 3]\n\t\t\t4 | 2 | 3 = 7\n\t\t\tNo\n\t\t\n\t\n\nThus, the good subarrays of nums are [4], [2], [3] and [2, 3]. Thus, the answer is 4.\n\nExample 2:\n\nInput: nums = [1,3,1]\n\nOutput: 6\n\nExplanation:\n\nAny subarray of nums containing 3 has bitwise OR equal to 3, and subarrays containing only 1 have bitwise OR equal to 1.\n\nIn both cases, the result is present in the subarray, so all subarrays are good, and the answer is 6.\n\n \n\nConstraints:\n\n\t- 1 <= nums.length <= 10^5\n\n\t- 0 <= nums[i] <= 10^9\n\nStarter code:\n```python\nclass Solution:\n    def countGoodSubarrays(self, nums: list[int]) -> int:\n```",
+    "tests": {
+     "kind": "functional",
+     "entry": "Solution.countGoodSubarrays",
+     "cases": [
+      {
+       "input": "[4,2,3]",
+       "output": "4"
+      },
+      {
+       "input": "[1,3,1]",
+       "output": "6"
+      }
+     ]
+    },
+    "tests_basis": "statement examples; oracle output == stated output",
+    "id": "code:leetcode:count-good-subarrays"
+   },
+   {
+    "uid": "code:leetcode:rearrange-array-by-removing-distinct-values",
+    "dataset": "code",
+    "source": "whiskwhite/leetcode-complete",
+    "root_id": "code:lc:rearrange-array-by-removing-distinct-values",
+    "first_published": "2026-09-27",
+    "date_basis": "leetcode",
+    "prompt": "You are given an integer array nums.\n\nYou start with an empty array ans. Repeat the following operation until nums is empty:\n\n\t- Identify all distinct values currently present in nums.\n\n\t- Remove one occurrence of every distinct value currently in nums, and append those values to ans in ascending order.\n\nReturn the array ans.\n\n \n\nExample 1:\n\nInput: nums = [3,1,3,2,1,3]\n\nOutput: [1,2,3,1,3,3]\n\nExplanation:\n\n\t\n\t\t\n\t\t\tOperation\n\t\t\tAppended to ans\n\t\t\tnums after\n\t\t\tans after\n\t\t\n\t\n\t\n\t\t\n\t\t\t1\n\t\t\t1, 2, 3\n\t\t\t[3, 1, 3]\n\t\t\t[1, 2, 3]\n\t\t\n\t\t\n\t\t\t2\n\t\t\t1, 3\n\t\t\t[3]\n\t\t\t[1, 2, 3, 1, 3]\n\t\t\n\t\t\n\t\t\t3\n\t\t\t3\n\t\t\t[]\n\t\t\t[1, 2, 3, 1, 3, 3]\n\t\t\n\t\n\nnums is now empty, so the answer is [1, 2, 3, 1, 3, 3].\n\nExample 2:\n\nInput: nums = [7,7,4,4,4]\n\nOutput: [4,7,4,7,4]\n\nExplanation:\n\n\t\n\t\t\n\t\t\tOperation\n\t\t\tAppended to ans\n\t\t\tnums after\n\t\t\tans after\n\t\t\n\t\n\t\n\t\t\n\t\t\t1\n\t\t\t4, 7\n\t\t\t[7, 4, 4]\n\t\t\t[4, 7]\n\t\t\n\t\t\n\t\t\t2\n\t\t\t4, 7\n\t\t\t[4]\n\t\t\t[4, 7, 4, 7]\n\t\t\n\t\t\n\t\t\t3\n\t\t\t4\n\t\t\t[]\n\t\t\t[4, 7, 4, 7, 4]\n\t\t\n\t\n\nnums is now empty, so the answer is [4, 7, 4, 7, 4].\n\n \n\nConstraints:\n\n\t- 1 <= nums.length <= 100\n\n\t- 1 <= nums[i] <= 100\n\nStarter code:\n```python\nclass Solution:\n    def rearrangeArray(self, nums: list[int]) -> list[int]:\n```",
+    "tests": {
+     "kind": "functional",
+     "entry": "Solution.rearrangeArray",
+     "cases": [
+      {
+       "input": "[3,1,3,2,1,3]",
+       "output": "[1, 2, 3, 1, 3, 3]"
+      },
+      {
+       "input": "[7,7,4,4,4]",
+       "output": "[4, 7, 4, 7, 4]"
+      }
+     ]
+    },
+    "tests_basis": "statement examples; oracle output == stated output",
+    "id": "code:leetcode:rearrange-array-by-removing-distinct-values"
+   }
+  ],
+  "mhqa": [
+   {
+    "uid": "mhqa:synth:w3:20260302:h2:Osnor_Romarnor",
+    "dataset": "mhqa",
+    "source": "synth_multihop w3 world seed=20260302",
+    "root_id": "mhqa:synth:w3:20260302:Osnor_Romarnor",
+    "first_published": "2026-09-28",
+    "date_basis": "invented world (contamination-free)",
+    "hops": 2,
+    "prompt": "Facts:\nThe city of Greveyen sits on the Zelul River.\nCaldepa Foundry is headquartered in Grecalvel.\nVelbri Deithnor once visited Tantrapa on business.\nQonor Tankagre was mentored by Velbri Deithnor.\nThe city of Miqomar sits on the Yensor River.\nKaka Marbriyen was mentored by Ithmi Anzeltan.\nIthmi Anzeltan works for Rotraan Labs.\nIthmi Anzeltan's birthplace is Miqomar.\nVelbri Deithnor admires the work of Kaka Marbriyen.\nthe Luvel River flows through Famical.\nOsnor Romarnor works for Grevelul Works.\nLugre Deronor is the mentor of Tanan Tananro.\nNorgretan Foundry is headquartered in Bricalve.\nThe city of Tanvelyen sits on the Ulan River.\nthe Vetra River flows through Verolu.\nIthmi Anzeltan is the mentor of Velbri Deithnor.\nYenfa Vecalqo was mentored by Ulmar Katraan.\nIthmi Anzeltan is the mentor of Bride Qoulve.\nNorgretan Foundry was founded by Ithmi Anzeltan.\nBride Qoulve was born in Marulve.\nMarlu Greluve was born in Greveyen.\nOsnor Romarnor is the mentor of Lugre Deronor.\nKaka Marbriyen admires the work of Ulmar Katraan.\nBride Qoulve works for Greulzel Foundry.\nFapapa Works employs Kaith Veltanvel.\nKaith Veltanvel once visited Velpavel on business.\nRotraan Labs is headquartered in Miqomar.\nGreulzel Foundry is headquartered in Marulve.\nThe city of Tantrapa sits on the Luan River.\nThe head office of Lusorgre Labs is in Velpavel.\nThe city of Bricalve sits on the Paka River.\nThe head office of Miyensor Holdings is in Bricalve.\nYenfa Vecalqo is employed at Fapapa Works.\nYenfa Vecalqo admires the work of Osnor Romarnor.\nThe city of Calyenzel sits on the Velpa River.\nthe Kasor River flows through Kafavel.\nQonor Tankagre is employed at Norgretan Foundry.\nUlmar Katraan admires the work of Osnor Romarnor.\nUlmar Katraan founded Rotraan Labs.\nUlmar Katraan is employed at Fapapa Works.\nTanan Tananro was born in Calyenzel.\nOsnor Romarnor's birthplace is Tanvelyen.\nGrevelul Works is headquartered in Ulsorfa.\nFapapa Works was founded by Velbri Deithnor.\nLugre Deronor once visited Ulsorfa on business.\nUlmar Katraan was born in Grecalvel.\nKaith Veltanvel admires the work of Osnor Romarnor.\nOsnor Romarnor was mentored by Ithmi Anzeltan.\nYenfa Vecalqo was born in Greveyen.\nIthmi Anzeltan was mentored by Velbri Deithnor.\nThe head office of Tananqo Holdings is in Midevel.\nGreulzel Foundry employs Marlu Greluve.\nUlmar Katraan founded Grevelul Works.\nLugre Deronor was born in Velpavel.\nThe head office of Yenyenfa Works is in Midevel.\nTanan Tananro founded Miyensor Holdings.\nthe Yenul River flows through Marulve.\nCaldepa Foundry was founded by Ulmar Katraan.\nLusorgre Labs employs Lugre Deronor.\nKaka Marbriyen once visited Tansoryen on business.\nThe city of Fafalu sits on the Trave River.\nTanan Tananro is employed at Greulzel Foundry.\nOsfaos Holdings was founded by Ithmi Anzeltan.\nQonor Tankagre's birthplace is Kafavel.\nYenfa Vecalqo once visited Velpavel on business.\nVelbri Deithnor was born in Calyenzel.\nThe city of Ulsorfa sits on the Zelzel River.\nMartannor Works is headquartered in Famical.\nVelbri Deithnor is the mentor of Marlu Greluve.\nLusorgre Labs was founded by Ulmar Katraan.\nUlmar Katraan once visited Calyenzel on business.\nUlmar Katraan was mentored by Tanan Tananro.\nTananqo Holdings was founded by Ulmar Katraan.\nKaka Marbriyen works for Caldepa Foundry.\nKaith Veltanvel's birthplace is Bricalve.\nLugre Deronor admires the work of Ulmar Katraan.\nThe city of Grecalvel sits on the Kaqo River.\nKaith Veltanvel was mentored by Qonor Tankagre.\nYenyenfa Works employs Velbri Deithnor.\nKaka Marbriyen's birthplace is Tansoryen.\nThe city of Tansoryen sits on the Tanro River.\nthe Calzel River flows through Velpavel.\nFapapa Works is headquartered in Greveyen.\nGreulzel Foundry was founded by Tanan Tananro.\nThe city of Midevel sits on the Mimar River.\nThe head office of Osfaos Holdings is in Tanvelyen.\nMartannor Works was founded by Tanan Tananro.\nQonor Tankagre founded Yenyenfa Works.\n\nQuestion: In which city is the company that Osnor Romarnor works for headquartered?\nGive the full chain on the last line: ANSWER: <person> -> <company> -> <city>",
+    "answer": {
+     "answer": "Ulsorfa",
+     "aliases": [],
+     "chain": [
+      "Osnor Romarnor",
+      "Grevelul Works",
+      "Ulsorfa"
+     ]
+    },
+    "guess_floor": {
+     "blind": 0.005208333333333333,
+     "follow": 0.08333333333333333
+    },
+    "id": "mhqa:synth:w3:20260302:h2:Osnor_Romarnor"
+   },
+   {
+    "uid": "mhqa:synth:w3:20260302:h2:Velbri_Deithnor",
+    "dataset": "mhqa",
+    "source": "synth_multihop w3 world seed=20260302",
+    "root_id": "mhqa:synth:w3:20260302:Velbri_Deithnor",
+    "first_published": "2026-09-28",
+    "date_basis": "invented world (contamination-free)",
+    "hops": 2,
+    "prompt": "Facts:\nThe city of Greveyen sits on the Zelul River.\nCaldepa Foundry is headquartered in Grecalvel.\nVelbri Deithnor once visited Tantrapa on business.\nQonor Tankagre was mentored by Velbri Deithnor.\nThe city of Miqomar sits on the Yensor River.\nKaka Marbriyen was mentored by Ithmi Anzeltan.\nIthmi Anzeltan works for Rotraan Labs.\nIthmi Anzeltan's birthplace is Miqomar.\nVelbri Deithnor admires the work of Kaka Marbriyen.\nthe Luvel River flows through Famical.\nOsnor Romarnor works for Grevelul Works.\nLugre Deronor is the mentor of Tanan Tananro.\nNorgretan Foundry is headquartered in Bricalve.\nThe city of Tanvelyen sits on the Ulan River.\nthe Vetra River flows through Verolu.\nIthmi Anzeltan is the mentor of Velbri Deithnor.\nYenfa Vecalqo was mentored by Ulmar Katraan.\nIthmi Anzeltan is the mentor of Bride Qoulve.\nNorgretan Foundry was founded by Ithmi Anzeltan.\nBride Qoulve was born in Marulve.\nMarlu Greluve was born in Greveyen.\nOsnor Romarnor is the mentor of Lugre Deronor.\nKaka Marbriyen admires the work of Ulmar Katraan.\nBride Qoulve works for Greulzel Foundry.\nFapapa Works employs Kaith Veltanvel.\nKaith Veltanvel once visited Velpavel on business.\nRotraan Labs is headquartered in Miqomar.\nGreulzel Foundry is headquartered in Marulve.\nThe city of Tantrapa sits on the Luan River.\nThe head office of Lusorgre Labs is in Velpavel.\nThe city of Bricalve sits on the Paka River.\nThe head office of Miyensor Holdings is in Bricalve.\nYenfa Vecalqo is employed at Fapapa Works.\nYenfa Vecalqo admires the work of Osnor Romarnor.\nThe city of Calyenzel sits on the Velpa River.\nthe Kasor River flows through Kafavel.\nQonor Tankagre is employed at Norgretan Foundry.\nUlmar Katraan admires the work of Osnor Romarnor.\nUlmar Katraan founded Rotraan Labs.\nUlmar Katraan is employed at Fapapa Works.\nTanan Tananro was born in Calyenzel.\nOsnor Romarnor's birthplace is Tanvelyen.\nGrevelul Works is headquartered in Ulsorfa.\nFapapa Works was founded by Velbri Deithnor.\nLugre Deronor once visited Ulsorfa on business.\nUlmar Katraan was born in Grecalvel.\nKaith Veltanvel admires the work of Osnor Romarnor.\nOsnor Romarnor was mentored by Ithmi Anzeltan.\nYenfa Vecalqo was born in Greveyen.\nIthmi Anzeltan was mentored by Velbri Deithnor.\nThe head office of Tananqo Holdings is in Midevel.\nGreulzel Foundry employs Marlu Greluve.\nUlmar Katraan founded Grevelul Works.\nLugre Deronor was born in Velpavel.\nThe head office of Yenyenfa Works is in Midevel.\nTanan Tananro founded Miyensor Holdings.\nthe Yenul River flows through Marulve.\nCaldepa Foundry was founded by Ulmar Katraan.\nLusorgre Labs employs Lugre Deronor.\nKaka Marbriyen once visited Tansoryen on business.\nThe city of Fafalu sits on the Trave River.\nTanan Tananro is employed at Greulzel Foundry.\nOsfaos Holdings was founded by Ithmi Anzeltan.\nQonor Tankagre's birthplace is Kafavel.\nYenfa Vecalqo once visited Velpavel on business.\nVelbri Deithnor was born in Calyenzel.\nThe city of Ulsorfa sits on the Zelzel River.\nMartannor Works is headquartered in Famical.\nVelbri Deithnor is the mentor of Marlu Greluve.\nLusorgre Labs was founded by Ulmar Katraan.\nUlmar Katraan once visited Calyenzel on business.\nUlmar Katraan was mentored by Tanan Tananro.\nTananqo Holdings was founded by Ulmar Katraan.\nKaka Marbriyen works for Caldepa Foundry.\nKaith Veltanvel's birthplace is Bricalve.\nLugre Deronor admires the work of Ulmar Katraan.\nThe city of Grecalvel sits on the Kaqo River.\nKaith Veltanvel was mentored by Qonor Tankagre.\nYenyenfa Works employs Velbri Deithnor.\nKaka Marbriyen's birthplace is Tansoryen.\nThe city of Tansoryen sits on the Tanro River.\nthe Calzel River flows through Velpavel.\nFapapa Works is headquartered in Greveyen.\nGreulzel Foundry was founded by Tanan Tananro.\nThe city of Midevel sits on the Mimar River.\nThe head office of Osfaos Holdings is in Tanvelyen.\nMartannor Works was founded by Tanan Tananro.\nQonor Tankagre founded Yenyenfa Works.\n\nQuestion: In which city is the company that Velbri Deithnor works for headquartered?\nGive the full chain on the last line: ANSWER: <person> -> <company> -> <city>",
+    "answer": {
+     "answer": "Midevel",
+     "aliases": [],
+     "chain": [
+      "Velbri Deithnor",
+      "Yenyenfa Works",
+      "Midevel"
+     ]
+    },
+    "guess_floor": {
+     "blind": 0.005208333333333333,
+     "follow": 0.08333333333333333
+    },
+    "id": "mhqa:synth:w3:20260302:h2:Velbri_Deithnor"
+   },
+   {
+    "uid": "mhqa:synth:w3:20260302:h2:Ithmi_Anzeltan",
+    "dataset": "mhqa",
+    "source": "synth_multihop w3 world seed=20260302",
+    "root_id": "mhqa:synth:w3:20260302:Ithmi_Anzeltan",
+    "first_published": "2026-09-28",
+    "date_basis": "invented world (contamination-free)",
+    "hops": 2,
+    "prompt": "Facts:\nThe city of Greveyen sits on the Zelul River.\nCaldepa Foundry is headquartered in Grecalvel.\nVelbri Deithnor once visited Tantrapa on business.\nQonor Tankagre was mentored by Velbri Deithnor.\nThe city of Miqomar sits on the Yensor River.\nKaka Marbriyen was mentored by Ithmi Anzeltan.\nIthmi Anzeltan works for Rotraan Labs.\nIthmi Anzeltan's birthplace is Miqomar.\nVelbri Deithnor admires the work of Kaka Marbriyen.\nthe Luvel River flows through Famical.\nOsnor Romarnor works for Grevelul Works.\nLugre Deronor is the mentor of Tanan Tananro.\nNorgretan Foundry is headquartered in Bricalve.\nThe city of Tanvelyen sits on the Ulan River.\nthe Vetra River flows through Verolu.\nIthmi Anzeltan is the mentor of Velbri Deithnor.\nYenfa Vecalqo was mentored by Ulmar Katraan.\nIthmi Anzeltan is the mentor of Bride Qoulve.\nNorgretan Foundry was founded by Ithmi Anzeltan.\nBride Qoulve was born in Marulve.\nMarlu Greluve was born in Greveyen.\nOsnor Romarnor is the mentor of Lugre Deronor.\nKaka Marbriyen admires the work of Ulmar Katraan.\nBride Qoulve works for Greulzel Foundry.\nFapapa Works employs Kaith Veltanvel.\nKaith Veltanvel once visited Velpavel on business.\nRotraan Labs is headquartered in Miqomar.\nGreulzel Foundry is headquartered in Marulve.\nThe city of Tantrapa sits on the Luan River.\nThe head office of Lusorgre Labs is in Velpavel.\nThe city of Bricalve sits on the Paka River.\nThe head office of Miyensor Holdings is in Bricalve.\nYenfa Vecalqo is employed at Fapapa Works.\nYenfa Vecalqo admires the work of Osnor Romarnor.\nThe city of Calyenzel sits on the Velpa River.\nthe Kasor River flows through Kafavel.\nQonor Tankagre is employed at Norgretan Foundry.\nUlmar Katraan admires the work of Osnor Romarnor.\nUlmar Katraan founded Rotraan Labs.\nUlmar Katraan is employed at Fapapa Works.\nTanan Tananro was born in Calyenzel.\nOsnor Romarnor's birthplace is Tanvelyen.\nGrevelul Works is headquartered in Ulsorfa.\nFapapa Works was founded by Velbri Deithnor.\nLugre Deronor once visited Ulsorfa on business.\nUlmar Katraan was born in Grecalvel.\nKaith Veltanvel admires the work of Osnor Romarnor.\nOsnor Romarnor was mentored by Ithmi Anzeltan.\nYenfa Vecalqo was born in Greveyen.\nIthmi Anzeltan was mentored by Velbri Deithnor.\nThe head office of Tananqo Holdings is in Midevel.\nGreulzel Foundry employs Marlu Greluve.\nUlmar Katraan founded Grevelul Works.\nLugre Deronor was born in Velpavel.\nThe head office of Yenyenfa Works is in Midevel.\nTanan Tananro founded Miyensor Holdings.\nthe Yenul River flows through Marulve.\nCaldepa Foundry was founded by Ulmar Katraan.\nLusorgre Labs employs Lugre Deronor.\nKaka Marbriyen once visited Tansoryen on business.\nThe city of Fafalu sits on the Trave River.\nTanan Tananro is employed at Greulzel Foundry.\nOsfaos Holdings was founded by Ithmi Anzeltan.\nQonor Tankagre's birthplace is Kafavel.\nYenfa Vecalqo once visited Velpavel on business.\nVelbri Deithnor was born in Calyenzel.\nThe city of Ulsorfa sits on the Zelzel River.\nMartannor Works is headquartered in Famical.\nVelbri Deithnor is the mentor of Marlu Greluve.\nLusorgre Labs was founded by Ulmar Katraan.\nUlmar Katraan once visited Calyenzel on business.\nUlmar Katraan was mentored by Tanan Tananro.\nTananqo Holdings was founded by Ulmar Katraan.\nKaka Marbriyen works for Caldepa Foundry.\nKaith Veltanvel's birthplace is Bricalve.\nLugre Deronor admires the work of Ulmar Katraan.\nThe city of Grecalvel sits on the Kaqo River.\nKaith Veltanvel was mentored by Qonor Tankagre.\nYenyenfa Works employs Velbri Deithnor.\nKaka Marbriyen's birthplace is Tansoryen.\nThe city of Tansoryen sits on the Tanro River.\nthe Calzel River flows through Velpavel.\nFapapa Works is headquartered in Greveyen.\nGreulzel Foundry was founded by Tanan Tananro.\nThe city of Midevel sits on the Mimar River.\nThe head office of Osfaos Holdings is in Tanvelyen.\nMartannor Works was founded by Tanan Tananro.\nQonor Tankagre founded Yenyenfa Works.\n\nQuestion: In which city is the company that Ithmi Anzeltan works for headquartered?\nGive the full chain on the last line: ANSWER: <person> -> <company> -> <city>",
+    "answer": {
+     "answer": "Miqomar",
+     "aliases": [],
+     "chain": [
+      "Ithmi Anzeltan",
+      "Rotraan Labs",
+      "Miqomar"
+     ]
+    },
+    "guess_floor": {
+     "blind": 0.005208333333333333,
+     "follow": 0.08333333333333333
+    },
+    "id": "mhqa:synth:w3:20260302:h2:Ithmi_Anzeltan"
+   },
+   {
+    "uid": "mhqa:synth:w3:20260302:h3:Ulmar_Katraan",
+    "dataset": "mhqa",
+    "source": "synth_multihop w3 world seed=20260302",
+    "root_id": "mhqa:synth:w3:20260302:Ulmar_Katraan",
+    "first_published": "2026-09-28",
+    "date_basis": "invented world (contamination-free)",
+    "hops": 3,
+    "prompt": "Facts:\nThe city of Greveyen sits on the Zelul River.\nCaldepa Foundry is headquartered in Grecalvel.\nVelbri Deithnor once visited Tantrapa on business.\nQonor Tankagre was mentored by Velbri Deithnor.\nThe city of Miqomar sits on the Yensor River.\nKaka Marbriyen was mentored by Ithmi Anzeltan.\nIthmi Anzeltan works for Rotraan Labs.\nIthmi Anzeltan's birthplace is Miqomar.\nVelbri Deithnor admires the work of Kaka Marbriyen.\nthe Luvel River flows through Famical.\nOsnor Romarnor works for Grevelul Works.\nLugre Deronor is the mentor of Tanan Tananro.\nNorgretan Foundry is headquartered in Bricalve.\nThe city of Tanvelyen sits on the Ulan River.\nthe Vetra River flows through Verolu.\nIthmi Anzeltan is the mentor of Velbri Deithnor.\nYenfa Vecalqo was mentored by Ulmar Katraan.\nIthmi Anzeltan is the mentor of Bride Qoulve.\nNorgretan Foundry was founded by Ithmi Anzeltan.\nBride Qoulve was born in Marulve.\nMarlu Greluve was born in Greveyen.\nOsnor Romarnor is the mentor of Lugre Deronor.\nKaka Marbriyen admires the work of Ulmar Katraan.\nBride Qoulve works for Greulzel Foundry.\nFapapa Works employs Kaith Veltanvel.\nKaith Veltanvel once visited Velpavel on business.\nRotraan Labs is headquartered in Miqomar.\nGreulzel Foundry is headquartered in Marulve.\nThe city of Tantrapa sits on the Luan River.\nThe head office of Lusorgre Labs is in Velpavel.\nThe city of Bricalve sits on the Paka River.\nThe head office of Miyensor Holdings is in Bricalve.\nYenfa Vecalqo is employed at Fapapa Works.\nYenfa Vecalqo admires the work of Osnor Romarnor.\nThe city of Calyenzel sits on the Velpa River.\nthe Kasor River flows through Kafavel.\nQonor Tankagre is employed at Norgretan Foundry.\nUlmar Katraan admires the work of Osnor Romarnor.\nUlmar Katraan founded Rotraan Labs.\nUlmar Katraan is employed at Fapapa Works.\nTanan Tananro was born in Calyenzel.\nOsnor Romarnor's birthplace is Tanvelyen.\nGrevelul Works is headquartered in Ulsorfa.\nFapapa Works was founded by Velbri Deithnor.\nLugre Deronor once visited Ulsorfa on business.\nUlmar Katraan was born in Grecalvel.\nKaith Veltanvel admires the work of Osnor Romarnor.\nOsnor Romarnor was mentored by Ithmi Anzeltan.\nYenfa Vecalqo was born in Greveyen.\nIthmi Anzeltan was mentored by Velbri Deithnor.\nThe head office of Tananqo Holdings is in Midevel.\nGreulzel Foundry employs Marlu Greluve.\nUlmar Katraan founded Grevelul Works.\nLugre Deronor was born in Velpavel.\nThe head office of Yenyenfa Works is in Midevel.\nTanan Tananro founded Miyensor Holdings.\nthe Yenul River flows through Marulve.\nCaldepa Foundry was founded by Ulmar Katraan.\nLusorgre Labs employs Lugre Deronor.\nKaka Marbriyen once visited Tansoryen on business.\nThe city of Fafalu sits on the Trave River.\nTanan Tananro is employed at Greulzel Foundry.\nOsfaos Holdings was founded by Ithmi Anzeltan.\nQonor Tankagre's birthplace is Kafavel.\nYenfa Vecalqo once visited Velpavel on business.\nVelbri Deithnor was born in Calyenzel.\nThe city of Ulsorfa sits on the Zelzel River.\nMartannor Works is headquartered in Famical.\nVelbri Deithnor is the mentor of Marlu Greluve.\nLusorgre Labs was founded by Ulmar Katraan.\nUlmar Katraan once visited Calyenzel on business.\nUlmar Katraan was mentored by Tanan Tananro.\nTananqo Holdings was founded by Ulmar Katraan.\nKaka Marbriyen works for Caldepa Foundry.\nKaith Veltanvel's birthplace is Bricalve.\nLugre Deronor admires the work of Ulmar Katraan.\nThe city of Grecalvel sits on the Kaqo River.\nKaith Veltanvel was mentored by Qonor Tankagre.\nYenyenfa Works employs Velbri Deithnor.\nKaka Marbriyen's birthplace is Tansoryen.\nThe city of Tansoryen sits on the Tanro River.\nthe Calzel River flows through Velpavel.\nFapapa Works is headquartered in Greveyen.\nGreulzel Foundry was founded by Tanan Tananro.\nThe city of Midevel sits on the Mimar River.\nThe head office of Osfaos Holdings is in Tanvelyen.\nMartannor Works was founded by Tanan Tananro.\nQonor Tankagre founded Yenyenfa Works.\n\nQuestion: Which river flows through the city where Ulmar Katraan's employer is headquartered?\nGive the full chain on the last line: ANSWER: <person> -> <company> -> <city> -> <river>",
+    "answer": {
+     "answer": "the Zelul River",
+     "aliases": [
+      "Zelul River"
+     ],
+     "chain": [
+      "Ulmar Katraan",
+      "Fapapa Works",
+      "Greveyen",
+      "the Zelul River"
+     ]
+    },
+    "guess_floor": {
+     "blind": 0.0003255208333333333,
+     "follow": 0.08333333333333333
+    },
+    "id": "mhqa:synth:w3:20260302:h3:Ulmar_Katraan"
+   },
+   {
+    "uid": "mhqa:synth:w3:20260302:h3:Lugre_Deronor",
+    "dataset": "mhqa",
+    "source": "synth_multihop w3 world seed=20260302",
+    "root_id": "mhqa:synth:w3:20260302:Lugre_Deronor",
+    "first_published": "2026-09-28",
+    "date_basis": "invented world (contamination-free)",
+    "hops": 3,
+    "prompt": "Facts:\nThe city of Greveyen sits on the Zelul River.\nCaldepa Foundry is headquartered in Grecalvel.\nVelbri Deithnor once visited Tantrapa on business.\nQonor Tankagre was mentored by Velbri Deithnor.\nThe city of Miqomar sits on the Yensor River.\nKaka Marbriyen was mentored by Ithmi Anzeltan.\nIthmi Anzeltan works for Rotraan Labs.\nIthmi Anzeltan's birthplace is Miqomar.\nVelbri Deithnor admires the work of Kaka Marbriyen.\nthe Luvel River flows through Famical.\nOsnor Romarnor works for Grevelul Works.\nLugre Deronor is the mentor of Tanan Tananro.\nNorgretan Foundry is headquartered in Bricalve.\nThe city of Tanvelyen sits on the Ulan River.\nthe Vetra River flows through Verolu.\nIthmi Anzeltan is the mentor of Velbri Deithnor.\nYenfa Vecalqo was mentored by Ulmar Katraan.\nIthmi Anzeltan is the mentor of Bride Qoulve.\nNorgretan Foundry was founded by Ithmi Anzeltan.\nBride Qoulve was born in Marulve.\nMarlu Greluve was born in Greveyen.\nOsnor Romarnor is the mentor of Lugre Deronor.\nKaka Marbriyen admires the work of Ulmar Katraan.\nBride Qoulve works for Greulzel Foundry.\nFapapa Works employs Kaith Veltanvel.\nKaith Veltanvel once visited Velpavel on business.\nRotraan Labs is headquartered in Miqomar.\nGreulzel Foundry is headquartered in Marulve.\nThe city of Tantrapa sits on the Luan River.\nThe head office of Lusorgre Labs is in Velpavel.\nThe city of Bricalve sits on the Paka River.\nThe head office of Miyensor Holdings is in Bricalve.\nYenfa Vecalqo is employed at Fapapa Works.\nYenfa Vecalqo admires the work of Osnor Romarnor.\nThe city of Calyenzel sits on the Velpa River.\nthe Kasor River flows through Kafavel.\nQonor Tankagre is employed at Norgretan Foundry.\nUlmar Katraan admires the work of Osnor Romarnor.\nUlmar Katraan founded Rotraan Labs.\nUlmar Katraan is employed at Fapapa Works.\nTanan Tananro was born in Calyenzel.\nOsnor Romarnor's birthplace is Tanvelyen.\nGrevelul Works is headquartered in Ulsorfa.\nFapapa Works was founded by Velbri Deithnor.\nLugre Deronor once visited Ulsorfa on business.\nUlmar Katraan was born in Grecalvel.\nKaith Veltanvel admires the work of Osnor Romarnor.\nOsnor Romarnor was mentored by Ithmi Anzeltan.\nYenfa Vecalqo was born in Greveyen.\nIthmi Anzeltan was mentored by Velbri Deithnor.\nThe head office of Tananqo Holdings is in Midevel.\nGreulzel Foundry employs Marlu Greluve.\nUlmar Katraan founded Grevelul Works.\nLugre Deronor was born in Velpavel.\nThe head office of Yenyenfa Works is in Midevel.\nTanan Tananro founded Miyensor Holdings.\nthe Yenul River flows through Marulve.\nCaldepa Foundry was founded by Ulmar Katraan.\nLusorgre Labs employs Lugre Deronor.\nKaka Marbriyen once visited Tansoryen on business.\nThe city of Fafalu sits on the Trave River.\nTanan Tananro is employed at Greulzel Foundry.\nOsfaos Holdings was founded by Ithmi Anzeltan.\nQonor Tankagre's birthplace is Kafavel.\nYenfa Vecalqo once visited Velpavel on business.\nVelbri Deithnor was born in Calyenzel.\nThe city of Ulsorfa sits on the Zelzel River.\nMartannor Works is headquartered in Famical.\nVelbri Deithnor is the mentor of Marlu Greluve.\nLusorgre Labs was founded by Ulmar Katraan.\nUlmar Katraan once visited Calyenzel on business.\nUlmar Katraan was mentored by Tanan Tananro.\nTananqo Holdings was founded by Ulmar Katraan.\nKaka Marbriyen works for Caldepa Foundry.\nKaith Veltanvel's birthplace is Bricalve.\nLugre Deronor admires the work of Ulmar Katraan.\nThe city of Grecalvel sits on the Kaqo River.\nKaith Veltanvel was mentored by Qonor Tankagre.\nYenyenfa Works employs Velbri Deithnor.\nKaka Marbriyen's birthplace is Tansoryen.\nThe city of Tansoryen sits on the Tanro River.\nthe Calzel River flows through Velpavel.\nFapapa Works is headquartered in Greveyen.\nGreulzel Foundry was founded by Tanan Tananro.\nThe city of Midevel sits on the Mimar River.\nThe head office of Osfaos Holdings is in Tanvelyen.\nMartannor Works was founded by Tanan Tananro.\nQonor Tankagre founded Yenyenfa Works.\n\nQuestion: Which river flows through the city where Lugre Deronor's employer is headquartered?\nGive the full chain on the last line: ANSWER: <person> -> <company> -> <city> -> <river>",
+    "answer": {
+     "answer": "the Calzel River",
+     "aliases": [
+      "Calzel River"
+     ],
+     "chain": [
+      "Lugre Deronor",
+      "Lusorgre Labs",
+      "Velpavel",
+      "the Calzel River"
+     ]
+    },
+    "guess_floor": {
+     "blind": 0.0003255208333333333,
+     "follow": 0.08333333333333333
+    },
+    "id": "mhqa:synth:w3:20260302:h3:Lugre_Deronor"
+   }
+  ]
+ },
+ "buckets": {
+  "code": {
+   "n": 5,
+   "max_tokens": 8192
+  },
+  "mhqa": {
+   "n": 5,
+   "max_tokens": 2048
+  }
+ },
+ "schema": "post_cutoff_v1_5pb",
+ "model": "Qwen/Qwen3.5-4B",
+ "cutoff": "2026-03-02",
+ "created": "20260928",
+ "seed": "grpo-local:qwen3.5-4b:2026-03-02"
+}
