@@ -1,5 +1,27 @@
 # Next: workspace gym (real tools, real files) - plan
 
+## North star (the goal, written 2026-09-29)
+
+**A 4B that keeps a 200-turn episode alive by writing its own notes and forgetting the rest.**
+GRPO on compaction/note-taking, graded only by whether the notes actually got her to the finish line. Not a bigger
+context window - her deciding what matters. That's the one that removes her ceiling: the intern who knows one office
+becomes the intern who never goes home.
+
+Built on the rebuilt-context design below (every call a fresh, small prompt: task + her notes + recent results),
+with long episodes graded by final outcome plus checkpoints.
+
+**Reward-hacking guard for notes (expect it in the first runs):** she will try writing "TODO: everything is fine"
+and claiming victory. So:
+- Notes are **never** graded directly and never read by the grader. Reward comes only from the task's mechanical end
+  state (exact answer / hidden pristine tests / end-state checks) - which a note can't fake.
+- The final answer must stand on its own: the grader re-derives success from the workspace, never from what she
+  says she did.
+- Canary items where the honest move is "not done yet": a note claiming completion there = flagged run.
+- Read the notes in the rollouts every run (canon: read 20 transcripts). Rising reward + nonsense notes = hacking.
+
+First sandbox numbers (r3, never trained on these tools): Find 7/7 on seed 9000; on seeds 9001-9005
+62/70 attempts (89%), 34/35 tasks; zero jail escapes attempted.
+
 Written 2026-09-29, after round 3. Current best adapter: **r3** (see runs/LOG.md).
 Goal: get her working in a real workspace with file tools, so she can be driven from a terminal CLI.
 
