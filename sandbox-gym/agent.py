@@ -28,7 +28,7 @@ from graders import ANSWER_RE, strip_reasoning
 from gyms import system_prompt
 from lsp import make_lsp
 from schema import Action, Task, Turn
-from workspace import Workspace
+from workspace import JailError, Workspace
 
 
 @dataclass
@@ -184,7 +184,17 @@ def run_episode(
             ep.done = False
             break
 
-        result = execute_tool(ws, action)
+        # A malformed call is feedback for her, never a harness crash.
+        try:
+            result = execute_tool(ws, action)
+        except KeyError as e:
+            required = [n for n, req, _ in T.TOOLS.get(action.name, {}).get("args", []) if req]
+            result = (f"error: {action.name} is missing required argument {e}. "
+                      f"Required: {', '.join(required) or 'none'}")
+        except (TypeError, ValueError) as e:
+            result = f"error: bad arguments for {action.name}: {e}"
+        except JailError as e:
+            result = f"error: {e}"
         ep.turns.append(Turn(content=content, resp_text=content, action=action,
                              obs=result, truncated=truncated))
         messages.append({"role": "assistant", "content": content})

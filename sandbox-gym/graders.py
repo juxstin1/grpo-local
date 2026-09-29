@@ -63,8 +63,16 @@ def grade_find(turns: list[Turn], workspace: Workspace, gt: str) -> tuple[bool, 
     ans = last_answer(turns)
     if ans is None:
         return False, "no-answer-line"
-    ok = normalize(ans) == normalize(gt)
+    ok = normalize(ans) == normalize(gt) or _same_number(ans, gt)
     return ok, f"pred={ans[:60]}"
+
+
+def _same_number(a: str, b: str) -> bool:
+    """42.5 == 42.50, 40.0 == 40: numbers compare by value, not spelling."""
+    try:
+        return abs(float(a.strip().rstrip(".")) - float(b.strip())) < 1e-9
+    except ValueError:
+        return False
 
 
 def grade_edit(turns: list[Turn], workspace: Workspace,

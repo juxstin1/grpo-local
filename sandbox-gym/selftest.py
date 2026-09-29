@@ -145,6 +145,14 @@ def test_graders() -> None:
         check("edit absent check", not ok_e2)
 
 
+def test_find_numbers() -> None:
+    print("[find grader: numbers by value]")
+    t = [Turn(content="ANSWER: 42.5", resp_text="ANSWER: 42.5")]
+    check("42.5 == 42.50", grade_find(t, None, "42.50")[0])
+    check("40.0 == 40", grade_find([Turn(content="ANSWER: 40.0", resp_text="ANSWER: 40.0")], None, "40")[0])
+    check("42.4 != 42.50", not grade_find([Turn(content="ANSWER: 42.4", resp_text="ANSWER: 42.4")], None, "42.50")[0])
+
+
 def test_search_injection() -> None:
     print("[search: pattern can't become a ripgrep flag]")
     with tempfile.TemporaryDirectory() as td:
@@ -245,6 +253,7 @@ def main() -> None:
     test_parse()
     test_repo()
     test_graders()
+    test_find_numbers()
     test_search_injection()
     test_lsp_jail()
     test_fix_grading()
