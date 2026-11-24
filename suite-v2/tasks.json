@@ -1,0 +1,71 @@
+{
+  "version": "public-development-v2",
+  "sealed": false,
+  "tasks": [
+    {
+      "name": "contract-edit-conflict-recovery", "family": "contract_v1", "root_id": "recovery/edit-conflict", "seed": 5, "split": "development",
+      "tools": ["read_file_lines", "read_file_chars", "replace_file"],
+      "prompt": "In config/worker.json change retries from 3 to 5. Preserve every other byte and every other file. Use only read_file_lines, read_file_chars and replace_file; do not create files. This development fixture injects one transient conflict on the first edit without changing the file. After an edit error, read the full current file, wait to observe that result, then retry from its contents. After the successful edit, read the full saved file in a later tool round and observe it before finishing. Do not queue a retry before seeing the preceding read result. Finish only when verified, with exactly: ANSWER: config/worker.json",
+      "files": {
+        "config/worker.json": "{\n  \"retries\": 3,\n  \"timeout_seconds\": 20\n}\n",
+        "notes/worker.md": "# Worker settings\nKeep the timeout at 20 seconds. This note is protected.\n"
+      },
+      "contract": {
+        "version": "outcome-v1", "final_answer": "config/worker.json",
+        "recovery": {"version": "edit-conflict-v1", "path": "config/worker.json"},
+        "outputs": {"config/worker.json": {"kind": "text_exact", "expected": "{\n  \"retries\": 5,\n  \"timeout_seconds\": 20\n}\n"}}
+      }
+    },
+    {
+      "name": "contract-rename-callers", "family": "contract_v1", "root_id": "refactor/pricing-callers", "seed": 1, "split": "development",
+      "tools": ["list_dir", "read_file", "search", "edit_file", "write_file"],
+      "prompt": "Rename apply_discount to apply_reduction in src/pricing.py and update its import and calls in src/receipt.py. Preserve all other Python behavior and statements; whitespace, comments and quote style may change in those two files. Do not edit any other file. Check both files after editing. Finish with exactly this final reply: ANSWER: src/pricing.py, src/receipt.py",
+      "files": {
+        "src/pricing.py": "TAX_RATE = 0.15\n\ndef apply_discount(price, percent):\n    if not 0 <= percent <= 100:\n        raise ValueError('percent out of range')\n    return round(price * (1 - percent / 100), 2)\n",
+        "src/receipt.py": "from src.pricing import apply_discount\n\ndef total(lines, percent):\n    return sum(apply_discount(price * quantity, percent) for price, quantity in lines)\n",
+        "src/__init__.py": "",
+        "notes/customer.txt": "Keep the rounding and percentage validation unchanged.\n"
+      },
+      "contract": {"version": "outcome-v1", "final_answer": "src/pricing.py, src/receipt.py", "outputs": {
+        "src/pricing.py": {"kind": "python_ast", "expected": "TAX_RATE = 0.15\n\ndef apply_reduction(price, percent):\n    if not 0 <= percent <= 100:\n        raise ValueError('percent out of range')\n    return round(price * (1 - percent / 100), 2)\n"},
+        "src/receipt.py": {"kind": "python_ast", "expected": "from src.pricing import apply_reduction\n\ndef total(lines, percent):\n    return sum(apply_reduction(price * quantity, percent) for price, quantity in lines)\n"}
+      }}
+    },
+    {
+      "name": "contract-reconcile-decisions", "family": "contract_v1", "root_id": "facts/approved-revision", "seed": 2, "split": "development",
+      "tools": ["list_dir", "read_file", "search", "write_file"],
+      "prompt": "Create reports/decision.json for Quay Renewal. Use only approved decisions in records/decisions.json, taking the highest revision separately for each field. Draft proposals do not override approved values. Write an object with exactly project (string), budget_usd (integer), owner (string), review_date (YYYY-MM-DD string). Preserve every source file and create no other files. Verify the saved object against the decision records. Finish with exactly: ANSWER: reports/decision.json",
+      "files": {
+        "records/decisions.json": "{\"project\":\"Quay Renewal\",\"decisions\":[{\"revision\":1,\"status\":\"approved\",\"field\":\"budget_usd\",\"value\":18000},{\"revision\":2,\"status\":\"approved\",\"field\":\"budget_usd\",\"value\":21500},{\"revision\":3,\"status\":\"draft\",\"field\":\"budget_usd\",\"value\":30000},{\"revision\":1,\"status\":\"approved\",\"field\":\"owner\",\"value\":\"Maya\"},{\"revision\":2,\"status\":\"approved\",\"field\":\"owner\",\"value\":\"Ivo\"},{\"revision\":1,\"status\":\"approved\",\"field\":\"review_date\",\"value\":\"2026-11-18\"}]}\n",
+        "notes/proposal.txt": "Proposed budget 30000 is not approved. Do not treat draft proposals as current decisions.\n"
+      },
+      "contract": {"version": "outcome-v1", "final_answer": "reports/decision.json", "outputs": {
+        "reports/decision.json": {"kind": "json_exact", "expected": {"project": "Quay Renewal", "budget_usd": 21500, "owner": "Ivo", "review_date": "2026-11-18"}}
+      }}
+    },
+    {
+      "name": "contract-open-orders", "family": "contract_v1", "root_id": "table/order-revisions", "seed": 3, "split": "development",
+      "tools": ["list_dir", "read_file", "search", "write_file"],
+      "prompt": "Read data/orders.csv. Each order_id may have several revisions: keep the row with the highest integer revision, then exclude cancelled orders. Create reports/open-orders.json with exactly orders (list of objects containing order_id and total_usd) and total_usd. Sort orders by order_id. Compute quantity times unit_usd using decimal money, and represent every total as a two-decimal string. Preserve every source file; create no other files. Verify the saved values. Finish with exactly: ANSWER: reports/open-orders.json",
+      "files": {
+        "data/orders.csv": "order_id,revision,status,quantity,unit_usd\nA12,1,open,2,10.25\nB09,1,open,4,3.50\nA12,2,open,3,10.25\nB09,2,cancelled,4,3.50\nC31,1,open,7,0.10\n",
+        "notes/format.txt": "Amounts are USD. The source is an append-only revision log.\n"
+      },
+      "contract": {"version": "outcome-v1", "final_answer": "reports/open-orders.json", "outputs": {
+        "reports/open-orders.json": {"kind": "json_exact", "expected": {"orders": [{"order_id": "A12", "total_usd": "30.75"}, {"order_id": "C31", "total_usd": "0.70"}], "total_usd": "31.45"}}
+      }}
+    },
+    {
+      "name": "contract-scoped-section-edit", "family": "contract_v1", "root_id": "document/scoped-duplicate-line", "seed": 4, "split": "development",
+      "tools": ["list_dir", "read_file", "search", "edit_file"],
+      "prompt": "In docs/agenda.md remove only the line 'Draft status: pending' from the Beta section. Keep the same line in Alpha. Preserve every other byte of that file, including blank lines, and preserve every other file. Create no files. Verify both sections after editing. Finish with exactly: ANSWER: docs/agenda.md",
+      "files": {
+        "docs/agenda.md": "# Weekly agenda\n\n## Alpha\nDraft status: pending\nOwner: Nina\n\n## Beta\nDraft status: pending\nOwner: Omar\n",
+        "docs/archive.md": "## Beta\nDraft status: pending\nArchived version; do not edit.\n"
+      },
+      "contract": {"version": "outcome-v1", "final_answer": "docs/agenda.md", "outputs": {
+        "docs/agenda.md": {"kind": "text_exact", "expected": "# Weekly agenda\n\n## Alpha\nDraft status: pending\nOwner: Nina\n\n## Beta\nOwner: Omar\n"}
+      }}
+    }
+  ]
+}

@@ -29,10 +29,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import agent
+import compact
 import encoding
 import repo_gen
 import seal
 from config import Config
+import gym_budget as GB
 from eval import make_task
 from runner import Runner
 from schema import Task
@@ -62,13 +64,30 @@ def main() -> None:
     ap.add_argument("--model", default="Qwen/Qwen3.5-4B", help="tokenizer source")
     ap.add_argument("--api-key", default="")
     ap.add_argument("--runner", default="docker")
+    ap.add_argument("--hint", default="",
+                    help="collection-only system line (context distillation); "
+                         "strip with sft/from_gym.py --strip-hint")
+    ap.add_argument("--compact", action="store_true",
+                    help="in-episode compaction (75%% trigger + checkpoint tool); default off")
+    ap.add_argument("--compact-note-mode", choices=["off", "force"], default="off")
+    ap.add_argument("--max-resets", type=int, default=None)
+    ap.add_argument("--temperature", type=float, default=None,
+                    help="override sampling temperature (match GRPO's for prescreens)")
+    ap.add_argument("--budget", type=int, default=None,
+                    help="episode token budget (default 8192 / env GYM_BUDGET); read by gym_budget at import")
     a = ap.parse_args()
 
     cfg = Config()
+    if a.temperature is not None:
+        cfg.serve.temperature = a.temperature
     cfg.serve.base, cfg.serve.served_model = a.base, a.served_model
     cfg.serve.api_key = a.api_key
     cfg.episode.family = a.family
     cfg.episode.runner = a.runner
+    cfg.episode.hint = a.hint
+    GB.check_server(cfg.serve.base, cfg.episode.budget, cfg.serve.api_key)
+    cfg.episode.compact = a.compact
+    cfg.episode.compact_note_mode, cfg.episode.max_resets = a.compact_note_mode, a.max_resets
     tok = AutoTokenizer.from_pretrained(a.model)
 
     seeds = []
@@ -104,24 +123,8 @@ def main() -> None:
                                                 task.family, task.name)["files"],
                              ws.root)
         ep = agent.run_episode(cfg, task, ws, prompt_len_fn=prompt_len,
-                               return_ids=True)
+                               return_ids=True, tokenizer=tok)
         return task, k, ep
-
-    def fidelity_error(ep: agent.Episode) -> str | None:
-        msgs = [{"role": "system", "content": agent.system_prompt(ep.task.tools)},
-                {"role": "user", "content": ep.task.prompt}]
-        for i, turn in enumerate(ep.turns):
-            served = ep.prompt_ids_per_turn[i] if i < len(ep.prompt_ids_per_turn) else []
-            local = encoding.render_chat(tok, msgs, cfg.episode.thinking)
-            if served != local:
-                return (f"turn {i}: served prompt ids != local template "
-                        f"(len {len(served)} vs {len(local)})")
-            msgs.append({"role": "assistant", "content": turn.content})
-            if turn.obs:
-                msgs.append({"role": "user", "content": agent.observation_text(
-                    turn.action.name if turn.action else "",
-                    turn.action.arguments if turn.action else {}, turn.obs)})
-        return None
 
     kept, n = 0, 0
     per_task: dict[str, dict] = {}
@@ -136,7 +139,7 @@ def main() -> None:
             st = per_task.setdefault(task.name, {
                 "family": task.family, "root_id": task.meta["seed"],
                 "pass": 0, "truncated": 0, "fail": 0, "error": 0,
-                "kept": 0, "win_tokens": []})
+                "kept": 0, "touched_tests": 0, "cap_hit": 0, "win_tokens": []})
             if ep.error:
                 st["error"] += 1
                 ffh.write(json.dumps({"id": f"{task.name}-a{k}", "seed": task.meta["seed"],
@@ -152,16 +155,56 @@ def main() -> None:
                     st["fail"] += 1
                 else:
                     st["pass"] += 1
-                if passed and not ep.truncated and st["kept"] < a.keep_per_task:
-                    f = fidelity_error(ep)
+                if ep.cap_hit:
+                    st["cap_hit"] += 1
+                    passed = False            # never finished: not a natural win
+                if ep.compact_fail:
+                    st["compact_fail"] = st.get("compact_fail", 0) + 1
+                    passed = False
+                if passed and not ep.truncated and touched_graded(ep):
+                    st["touched_tests"] += 1
+                    passed = False            # logged as fail below, never kept
+                if passed and not ep.truncated and st["kept"] < a.keep_per_task and cfg.episode.compact:
+                    f = compact.fidelity_error(ep, tok, cfg.episode.thinking,
+                                               agent.counter_turns(cfg))
                     if f:
                         raise RuntimeError(f"[collect] {task.name}: {f} -- aborting")
-                    segs = _segments(ep, tok, cfg.episode.thinking)
+                    seqs = compact.sequences(ep, tok, cfg.episode.thinking,
+                                             agent.counter_turns(cfg))
+                    summ = compact.summary(ep)
+                    for j, sq in enumerate(seqs):   # one SFT record per window / note call
+                        fh.write(json.dumps({
+                            "id": f"{task.name}-a{k}-s{j}", "root_id": task.meta["seed"],
+                            "bucket": task.family, "split": "train",
+                            "compact": {"seq": j, "kind": sq["kind"], "window": sq["window"],
+                                        "of": len(seqs), "resets": summ["resets"]},
+                            "messages": [],
+                            "prompt_ids": sq["segments"][0]["ids"],
+                            "segments": sq["segments"],
+                            "completion_ids": [i for s in sq["segments"] if s["train"]
+                                               for i in s["ids"]],
+                            "grade": {"pass": True, "detail": ""},
+                            "model": a.model + (f"+{a.served_model}" if a.served_model else ""),
+                            "sampling": {"temperature": cfg.serve.temperature,
+                                         "top_p": cfg.serve.top_p,
+                                         "budget": cfg.episode.budget},
+                        }, ensure_ascii=False) + "\n")
+                    fh.flush()
+                    st["kept"] += 1
+                    kept += 1
+                    st["win_tokens"].append(ep.n_tokens)
+                elif passed and not ep.truncated and st["kept"] < a.keep_per_task:
+                    f = fidelity_error(ep, tok, cfg.episode.thinking, agent.counter_turns(cfg),
+                                       cfg.episode.hint)
+                    if f:
+                        raise RuntimeError(f"[collect] {task.name}: {f} -- aborting")
+                    segs = _segments(ep, tok, cfg.episode.thinking, agent.counter_turns(cfg))
                     rec = {
                         "id": f"{task.name}-a{k}", "root_id": task.meta["seed"],
                         "bucket": task.family, "split": "train",
                         "messages": [
-                            {"role": "system", "content": agent.system_prompt(task.tools),
+                            {"role": "system", "content": agent.system_prompt(task.tools, agent.counter_turns(cfg),
+                                                                   cfg.episode.hint),
                              "train": False},
                             {"role": "user", "content": task.prompt, "train": False},
                         ],
@@ -195,7 +238,38 @@ def main() -> None:
     print(json.dumps({"kept": kept, "refused_seeds": refused}, indent=1))
 
 
-def _segments(ep: agent.Episode, tok, thinking: bool) -> list[dict]:
+def fidelity_error(ep: agent.Episode, tok, thinking: bool,
+                   max_turns: int | None = None, hint: str = "") -> str | None:
+    """Every turn's served prompt ids must equal the local template render."""
+    msgs = [{"role": "system", "content": agent.system_prompt(ep.task.tools, max_turns, hint)},
+            {"role": "user", "content": ep.task.prompt}]
+    for i, turn in enumerate(ep.turns):
+        served = ep.prompt_ids_per_turn[i] if i < len(ep.prompt_ids_per_turn) else []
+        local = encoding.render_chat(tok, msgs, thinking)
+        if served != local:
+            return (f"turn {i}: served prompt ids != local template "
+                    f"(len {len(served)} vs {len(local)})")
+        msgs.append(agent.assistant_message(turn.content, turn.reasoning))
+        if turn.obs:
+            msgs.append({"role": "user", "content": agent.observation_text(
+                turn.action.name if turn.action else "",
+                turn.action.arguments if turn.action else {}, turn.obs,
+                i + 1, max_turns)})
+    return None
+
+
+def touched_graded(ep: agent.Episode) -> str | None:
+    """A win that wrote to tests/ may be a cheat; SFT would teach it. Drop it."""
+    for t in ep.turns:
+        if t.action and t.action.name in ("edit_file", "write_file"):
+            path = str(t.action.arguments.get("path", "")).replace("\\", "/").lstrip("./")
+            if path.startswith("tests/") or "/tests/" in path:
+                return path
+    return None
+
+
+def _segments(ep: agent.Episode, tok, thinking: bool,
+              max_turns: int | None = None) -> list[dict]:
     """prompt + assistant turns (trainable) + observations (not)."""
     segs: list[dict] = []
     if ep.prompt_ids_per_turn:
@@ -206,7 +280,11 @@ def _segments(ep: agent.Episode, tok, thinking: bool) -> list[dict]:
         segs.append({"kind": "assistant", "ids": list(ids), "train": True})
         if turn.obs:
             segs.append({"kind": "obs",
-                         "ids": encoding.encode_observation(tok, turn.obs, thinking),
+                         "ids": encoding.encode_observation(
+                             tok, encoding.observation_body(turn.action.name,
+                                                            turn.action.arguments, turn.obs,
+                                                            i + 1, max_turns),
+                             thinking),
                          "train": False})
     return segs
 

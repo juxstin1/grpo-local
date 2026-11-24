@@ -295,6 +295,24 @@ def _fix_specs(seed: int) -> list[dict]:
 
 
 def make_specs(seed: int, family: str) -> list[dict]:
+    if family.endswith(("_h", "_m")):         # v2 hard / mid workspaces
+        import repo_gen_hard
+        return repo_gen_hard.SPECS[family](seed)
+    if family == "mhqa_t":                     # tool-fetched multi-hop KB (mhqa_tool.py)
+        import mhqa_tool
+        return mhqa_tool.specs(seed)
+    if family == "repo_q":                     # questions over the real plugin repo (repo_q.py)
+        import repo_q
+        return repo_q.specs(seed)
+    if family == "doc_make":                   # write a md/PDF report from notes + csv (doc_make.py)
+        import doc_make
+        return doc_make.specs(seed)
+    if family == "gather_produce":             # lookups -> FINDINGS.md (gather_produce.py)
+        import gather_produce
+        return gather_produce.specs(seed)
+    if family == "doc_digest":                 # long doc -> SUMMARY.md, keys + decoys (doc_digest.py)
+        import doc_digest
+        return doc_digest.specs(seed)
     return {"find": _find_specs, "edit": _edit_specs, "fix": _fix_specs}[family](seed)
 
 

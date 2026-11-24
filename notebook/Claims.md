@@ -1,0 +1,150 @@
+# Claims
+
+Write a line **before** editing a file. When finished, change `OPEN` to `DONE HH:MM` on that line. Never delete lines.
+If a file has an `OPEN` claim by someone else, don't edit it. See [[README]], [[Runs]].
+
+Format: `- YYYY-MM-DD HH:MM [claude|codex|user] OPEN <path> — <why>`
+
+- 2026-09-30 15:37 [claude] DONE 15:45 grpo-local/notebook/** — create vault
+- 2026-09-30 15:37 [claude] DONE 15:45 .claude/settings.json, .claude/hooks/notebook_*.js — logging hooks
+- 2026-09-30 15:37 [claude] DONE 15:45 grpo-local/AGENTS.md — append notebook rule for Codex
+- 2026-09-30 16:16 [claude] DONE 16:21 grpo-local/handoff-gym/branch.py, handoff-gym/stub_model.py, handoff-gym/test_branch.py, handoff-gym/fixtures/** — branched note-GRPO groups (freeze/resume/notes/continuations), stub test, pod rollout fixture
+- 2026-09-30 18:16 [claude] CLAIM sandbox-gym/train_grpo.py, ops/pod-run-objective.sh, ops/stop-after.ps1 — STOP_AFTER flag: clean early stop + stage-3 handoff
+- 2026-09-30 18:18 [claude] DONE 18:18 sandbox-gym/train_grpo.py, ops/pod-run-objective.sh, ops/stop-after.ps1 — STOP_AFTER (closes 18:16 CLAIM line)
+- 2026-09-30 18:19 [codex] DONE 18:23 pod:/workspace/obj/full.done, pod:/workspace/supervisor.log -- mark completed step-10 full stage and relaunch supervisor for stage-3 eval
+- 2026-09-30 18:24 [codex] DONE 18:24 grpo-local/notebook/Log/2026-09-30.md -- record verified stage-3 relaunch
+- 2026-09-30 18:24 [codex] DONE 18:24 grpo-local/notebook/Runs.md -- record stage-3 supervisor launch
+- 2026-09-30 18:28 [codex] DONE 18:36 pod:/workspace/grpo-local/evals/{graders.py,holdout/seal.py,datasets/synth_multihop.py,data/sets/post_cutoff_v1_5pb.json} -- restore dependencies missing from stage-3 mhqa evaluation
+- 2026-09-30 18:28 [codex] DONE 18:36 pod:/workspace/supervisor.log -- relaunch stage-3 after dependency smoke check
+- 2026-09-30 18:35 [codex] DONE 18:46 pod:/workspace/grpo-local/sft/data/codex-mhqa-smoke-20260930*, pod:/workspace/obj/eval-*.log, pod:/workspace/REPORT.md -- smoke missing-dependency repair and finish stage-3 eval/report
+- 2026-09-30 18:36 [codex] DONE 18:36 grpo-local/notebook/Log/2026-09-30.md -- record stage-3 dependency repair and relaunch
+- 2026-09-30 18:36 [codex] DONE 18:36 grpo-local/notebook/Runs.md -- close failed attempt and record relaunch
+- 2026-09-30 18:45 [codex] DONE 18:46 grpo-local/runs/ops/REPORT-step10-2026-09-30.md -- preserve completed pod stage-3 report
+- 2026-09-30 18:45 [codex] DONE 18:46 grpo-local/.planning/STATE.md -- log stage-3 result and leg-2 gate
+- 2026-09-30 18:46 [codex] DONE 18:46 grpo-local/notebook/Log/2026-09-30.md -- record completed stage-3 gate
+- 2026-09-30 18:46 [codex] DONE 18:46 grpo-local/notebook/Runs.md -- mark stage-3 run done
+- 2026-09-30 18:47 [codex] DONE 19:36 grpo-local/ops/pod-leg2.sh -- implement checkpoint-safe prescreen and ten-step continuation after stage-3 gate
+- 2026-09-30 19:05 [codex] DONE 19:36 grpo-local/ops/pod-leg2-supervisor.sh -- checkpoint-aware retry wrapper for leg-2 pod run
+- 2026-09-30 19:33 [codex] DONE 19:36 pod:/workspace/leg2.sh, pod:/workspace/leg2-supervisor.sh -- install isolated leg-2 runner after syntax and gate checks
+- 2026-09-30 19:33 [codex] DONE 21:19 pod:/workspace/obj/leg2/*, pod:/workspace/REPORT-leg2.md, pod:/workspace/obj/ckpt/step-11..20, pod:/workspace/grpo-local/sandbox-gym/data/collect/leg2-* -- run new-seed prescreen and checkpoint continuation
+- 2026-09-30 19:36 [codex] DONE 19:36 grpo-local/notebook/Log/2026-09-30.md -- record live leg-2 launch
+- 2026-09-30 19:36 [codex] DONE 19:36 grpo-local/notebook/Runs.md -- register leg-2 run
+- 2026-09-30 19:36 [codex] DONE 19:36 grpo-local/.planning/STATE.md -- record leg-2 launch and gate
+- 2026-09-30 19:37 [codex] DONE 19:44 grpo-local/ops/pod-leg2-status.sh, grpo-local/ops/monitor-leg2.ps1 -- durable 10-minute graded-rate monitor for leg 2
+- 2026-09-30 19:40 [codex] DONE 19:44 pod:/workspace/leg2-status.sh -- install read-only status sampler for durable monitor
+- 2026-09-30 19:40 [codex] DONE 21:19 grpo-local/.planning/monitor-last.txt, grpo-local/runs/ops/leg2-monitor-alerts.log -- append ten-minute baseline and condition alerts
+- 2026-09-30 19:42 [codex] DONE 19:44 grpo-local/runs/ops/leg2-monitor.{json,log}, grpo-local/runs/ops/events.log -- register detached ten-minute monitor
+- 2026-09-30 19:44 [codex] DONE 19:44 grpo-local/notebook/Log/2026-09-30.md -- record monitor launch and live prescreen
+- 2026-09-30 19:44 [codex] DONE 19:44 grpo-local/notebook/Runs.md -- register detached leg-2 monitor
+- 2026-09-30 19:44 [codex] DONE 19:44 grpo-local/.planning/STATE.md -- record graded-rate monitor
+- 2026-09-30 19:51 [codex] DONE 19:51 grpo-local/notebook/Log/2026-09-30.md -- record user pacing revision and wait for prescreen gate
+- 2026-09-30 20:20 [codex] DONE 20:20 grpo-local/notebook/Log/2026-09-30.md -- record live leg-2 status and graded-count ETA
+- 2026-09-30 20:30 [codex] DONE 20:30 grpo-local/notebook/Log/2026-09-30.md -- clarify saved-winner count versus mixed-task pool
+- 2026-09-30 20:30 [codex] DONE 20:30 grpo-local/.planning/STATE.md -- record exact leg-2 pool gate semantics
+- 2026-09-30 20:53 [codex] DONE 20:53 grpo-local/notebook/Log/2026-09-30.md -- record completed leg-2 prescreen gate
+- 2026-09-30 20:53 [codex] DONE 20:53 grpo-local/.planning/STATE.md -- record mixed pool and step-11 start
+- 2026-09-30 20:54 [codex] DONE 20:54 grpo-local/notebook/Log/2026-09-30.md -- record saved step-11 checkpoint and sampling correction
+- 2026-09-30 20:54 [codex] DONE 20:54 grpo-local/.planning/STATE.md -- record leg-2 step-11 result
+- 2026-09-30 21:15 [codex] DONE 21:19 grpo-local/ops/pod-leg2.sh -- correct cumulative r3 regression gate in future reports
+- 2026-09-30 21:15 [codex] DONE 21:19 pod:/workspace/REPORT-leg2.md -- append cumulative gate correction to completed report
+- 2026-09-30 21:15 [codex] DONE 21:19 grpo-local/runs/ops/REPORT-leg2-2026-09-30.md -- copy corrected pod report locally
+- 2026-09-30 21:15 [codex] DONE 21:19 grpo-local/.planning/STATE.md -- record leg2 outcome and leg3 hold
+- 2026-09-30 21:15 [codex] DONE 21:19 grpo-local/notebook/Log/2026-09-30.md -- log verified leg2 result
+- 2026-09-30 21:15 [codex] DONE 21:19 grpo-local/notebook/Runs.md -- close leg2 run row
+- 2026-09-30 21:38 [codex] DONE 22:14 adapter-backups/2026-09-30/grpo-step-10/*, adapter-backups/2026-09-30/grpo-step-20/* -- pull pod adapters and verify checkpoint hashes before pod stop
+- 2026-09-30 21:38 [codex] DONE 22:14 adapter-backups/2026-09-30/grpo-steps-10-20-manifest.md -- record transfer and hash evidence
+- 2026-09-30 21:38 [codex] DONE 22:14 grpo-local/notebook/Log/2026-09-30.md -- log adapter pull and pod stop results
+- 2026-09-30 21:38 [codex] DONE 22:14 grpo-local/.planning/STATE.md -- record leg3 approval hold and pod state
+- 2026-09-30 21:39 [codex] DONE 22:14 adapter-backups/2026-09-30/steps.jsonl -- preserve checkpoint hash rows before pod stop
+- 2026-09-30 21:48 [codex] DONE 22:14 grpo-local/ops/pod-leg3-diagnostics.sh -- draft and run prescreen plus fresh diagnostic evals without training
+- 2026-09-30 21:48 [codex] OPEN pod:/workspace/leg3-diagnostics.sh, pod:/workspace/obj/leg3-diagnostics/*, pod:/workspace/REPORT-leg3-diagnostics.md -- detached diagnostic job artifacts
+- 2026-09-30 21:48 [codex] OPEN pod:/workspace/grpo-local/sandbox-gym/data/collect/leg3-*, pod:/workspace/grpo-local/sft/data/leg3-* -- immutable prescreen and fresh diagnostic outputs
+- 2026-09-30 21:48 [codex] DONE 22:14 grpo-local/sandbox-gym/train_grpo.py, grpo-local/sandbox-gym/grpo_sampling.py -- add bounded dynamic group sampling locally
+- 2026-09-30 21:48 [codex] DONE 22:14 grpo-local/sandbox-gym/test_grpo_sampling.py -- meaningful pure sampling behavior tests
+- 2026-09-30 21:48 [codex] DONE 22:14 grpo-local/.planning/PLAN-leg3.md, grpo-local/.planning/leg3-config.json -- draft three-family leg3 config and larger future MHQA gate
+- 2026-09-30 21:48 [codex] DONE 22:14 grpo-local/notebook/Runs.md -- register diagnostic job when launched
+- 2026-09-30 21:54 [codex] OPEN grpo-local/runs/ops/leg3-diagnostics.{log,json}, grpo-local/runs/ops/events.log -- detached diagnostic runner outputs (claim recorded after 21:53 launch)
+- 2026-09-30 22:02 [codex] DONE 22:14 grpo-local/runs/ops/leg3-trainer-pod-baseline.py, grpo-local/runs/ops/leg3-trainer-vs-pod.diff -- preserve pod trainer baseline and review local-only changes
+- 2026-09-30 22:04 [codex] DONE 22:14 grpo-local/ops/pod-leg3-status.sh, grpo-local/ops/monitor-leg3.ps1 -- durable diagnostics progress and failure monitor
+- 2026-09-30 22:04 [codex] DONE 22:14 pod:/workspace/leg3-status.sh -- install read-only diagnostic status sampler
+- 2026-09-30 22:04 [codex] OPEN grpo-local/.planning/leg3-monitor-last.json, grpo-local/runs/ops/leg3-monitor-alerts.log, grpo-local/runs/ops/leg3-monitor.{json,log} -- detached ten-minute status baseline and alerts
+- 2026-09-30 22:08 [codex] DONE 22:14 grpo-local/runs/ops/leg3-prep-review.md -- summarize plan, exact local diffs, validation, and live diagnostic status
+- 2026-09-30 22:29 [codex] DONE 23:04 grpo-local/sandbox-gym/train_grpo.py -- integrate mixed-family loader and MHQA rollout dispatch locally
+- 2026-09-30 22:29 [codex] DONE 23:04 grpo-local/sandbox-gym/grpo_mixed.py -- add audited pool loader and token-exact MHQA rollout/grader
+- 2026-09-30 22:29 [codex] DONE 23:04 grpo-local/sandbox-gym/test_grpo_mixed.py -- validate pool, family quotas, MHQA prompt fidelity and grading
+- 2026-09-30 22:29 [codex] DONE 23:04 grpo-local/.planning/leg3-config.json, grpo-local/.planning/PLAN-leg3.md -- update local-only integration status and prerequisites
+- 2026-09-30 22:29 [codex] DONE 23:04 grpo-local/runs/ops/leg3-trainer-clean.py, grpo-local/runs/ops/leg3-only.patch -- isolate leg-3 trainer patch from older local changes
+- 2026-09-30 22:37 [codex] DONE 23:04 grpo-local/ops/build-leg3-patch.py -- generate the focused review patch reproducibly
+- 2026-09-30 22:45 [codex] DONE 23:04 grpo-local/ops/build-leg3-attestation.py -- bind completed diagnostic screen artifacts to step-20 provenance before training
+- 2026-09-30 22:29 [codex] DONE 23:04 grpo-local/runs/ops/leg3-prep-review.md -- report mixed-family implementation and validation
+- 2026-09-30 22:29 [codex] DONE 23:04 grpo-local/.planning/STATE.md, grpo-local/notebook/Log/2026-09-30.md -- record GRPO/SFT clarification and local integration result
+- 2026-09-30 23:22 [codex] DONE 23:22 grpo-local/notebook/Log/2026-09-30.md -- record live diagnostics ETA check
+- 2026-09-30 23:25 [codex] DONE 23:25 grpo-local/notebook/Log/2026-09-30.md -- record task-count audit and clarify screening versus training
+- 2026-09-30 23:31 [codex] OPEN grpo-local/ops/chat_workspace.py -- make local interactive chat wrapper around the trained agent loop
+- 2026-09-30 23:31 [codex] OPEN grpo-local/runs/interactive/step20-handoff-2026-09-30/** -- copy a small real project for an isolated trial and record its transcript
+- 2026-09-30 23:31 [codex] OPEN grpo-local/notebook/Runs.md -- register the one-item interactive trial
+- 2026-09-30 23:31 [codex] OPEN grpo-local/notebook/Log/2026-09-30.md -- record setup and observed model behavior
+- 2026-09-30 23:44 [codex] OPEN adapter-backups/2026-09-30/pod-close-2344/** -- copy pod checkpoints, data, reports and verify them before pod closure
+- 2026-09-30 23:44 [codex] OPEN grpo-local/.planning/STATE.md -- record leg3 diagnostics gate failure and verified local backup
+- 2026-10-02 19:39 [claude] DONE 19:41 grpo-local/sandbox-gym/repo_gen.py -- wire new mhqa_t family (tool-fetched multi-hop KB)
+- 2026-10-02 19:39 [claude] DONE 19:41 grpo-local/sandbox-gym/graders.py -- wire new mhqa_t family (tool-fetched multi-hop KB)
+- 2026-10-02 19:39 [claude] DONE 19:41 grpo-local/sandbox-gym/seal.py -- wire new mhqa_t family (tool-fetched multi-hop KB)
+- 2026-10-02 19:48 [claude] DONE 19:49 grpo-local/handoff-gym/score.py -- per-note progress lines + as-completed state results + partial rows jsonl (user: no blind mid-run)
+- 2026-10-02 19:54 [claude] DONE 19:54 grpo-local/handoff-gym/score.py -- oracle-note ceiling mode (user request)
+- 2026-10-02 20:00 [claude] OPEN grpo-local/sandbox-gym/corpus.py -- BrowseComp-Plus frozen corpus backend
+- 2026-10-02 20:00 [claude] OPEN grpo-local/sandbox-gym/data/corpus/ -- corpus data, index, manifest, feasibility
+- 2026-10-02 20:00 [claude] OPEN grpo-local/sandbox-gym/test_corpus.py -- corpus tests
+- 2026-10-02 20:00 [claude] DONE 20:22 grpo-local/sandbox-gym/repo_gen.py -- repo_q dispatch line only
+- 2026-10-02 20:00 [claude] DONE 20:22 grpo-local/sandbox-gym/graders.py -- repo_q dispatch line only
+- 2026-10-02 20:00 [claude] DONE 20:22 grpo-local/sandbox-gym/repo_q.py, test_repo_q.py, data/holdout/smoke_repoq_* -- new family repo_q (questions over real plugin repos)
+- 2026-10-02 20:01 [claude] DONE 20:05 grpo-local/sandbox-gym/tools.py -- add web_search/fetch_url TOOLS entries (Bionic verbatim) + schema-aware describe
+- 2026-10-02 20:01 [claude] DONE 20:05 grpo-local/sandbox-gym/agent.py -- execute_tool dispatch for web_search/fetch_url + schema-aware _openai_tools
+- 2026-10-02 20:01 [claude] DONE 20:05 grpo-local/sandbox-gym/web_tools.py, test_web_tools.py, docs/bionic-web-tools-spec.md -- new: Bionic-mirrored web tools over corpus.py interface
+- 2026-10-02 20:03 [claude] DONE 20:07 grpo-local/handoff-gym/tool_handoff.py + test_tool_handoff.py (new) -- compaction on tool episodes
+- 2026-10-02 20:13 [claude] DONE 20:26 grpo-local/sandbox-gym/agent.py, tools.py, config.py, eval.py, rollout.py, collect.py, encoding.py, grpo-local/notes.py, new sandbox-gym/compact.py + test_compact.py -- in-episode compaction (75% trigger + checkpoint tool), switchable --compact default off
+- 2026-10-02 20:20 [claude] DONE 20:40 grpo-local/sandbox-gym/corpus.py, test_corpus.py, data/corpus/** -- fix build hang (regex backtrack), verify index, manifest/feasibility
+- 2026-10-02 20:20 [claude] DONE 20:26 grpo-local/sandbox-gym/schema.py, rl.py, train_grpo.py -- compaction: multi-window trajectories (additive; empty = today)
+- 2026-10-02 20:29 [claude] DONE 20:35 grpo-local/sandbox-gym/doc_make.py, test_doc_make.py, doc_tools.py, data/holdout/smoke_docmake_* -- new family doc_make (write md/PDF report from notes+csv; holdout seeds 9401-9405 reserved 9400-9449)
+- 2026-10-02 20:29 [claude] DONE 20:35 grpo-local/sandbox-gym/tools.py -- additive make_pdf TOOLS entry
+- 2026-10-02 20:29 [claude] DONE 20:35 grpo-local/sandbox-gym/agent.py -- additive make_pdf dispatch in execute_tool
+- 2026-10-02 20:29 [claude] DONE 20:35 grpo-local/sandbox-gym/repo_gen.py -- doc_make dispatch line only
+- 2026-10-02 20:29 [claude] DONE 20:35 grpo-local/sandbox-gym/graders.py -- doc_make dispatch line only
+- 2026-10-02 20:40 [claude] DONE 20:46 grpo-local/sandbox-gym/doc_digest.py, test_doc_digest.py, data/holdout/smoke_docdigest_* -- new family doc_digest (long-doc summary, key facts + decoys)
+- 2026-10-02 20:40 [claude] DONE 20:38 grpo-local/sandbox-gym/repo_gen.py -- doc_digest dispatch line only
+- 2026-10-02 20:40 [claude] DONE 20:38 grpo-local/sandbox-gym/graders.py -- doc_digest dispatch only (reward_for + files_ok diagnostic branch)
+- 2026-10-02 20:32 [claude] DONE 20:32 grpo-local/handoff-gym/score.py -- record reader finish reason/tokens/answer-line per read (truncated vs wrong)
+- 2026-10-02 20:33 [claude] DONE 20:42 grpo-local/sandbox-gym/gather_produce.py, test_gather_produce.py, data/holdout/smoke_gather_* -- new family gather_produce (lookups over repo_q -> FINDINGS.md; holdout seeds 9501-9505, reserved 9500-9549)
+- 2026-10-02 20:33 [claude] DONE 20:38 grpo-local/sandbox-gym/repo_gen.py -- gather_produce dispatch line only
+- 2026-10-02 20:33 [claude] DONE 20:38 grpo-local/sandbox-gym/graders.py -- gather_produce dispatch line only
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/gym_budget.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/sandbox-gym/config.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/handoff-gym/common.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/sft/sft_schema.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/sandbox-gym/grpo_mixed.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/sandbox-gym/eval.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/sandbox-gym/collect.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/sandbox-gym/train_grpo.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/evals/eval_runner.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/tau2-bridge/run_tau2.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/handoff-gym/score.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/handoff-gym/tool_handoff.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/handoff-gym/branch.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/notes.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:41 [claude] DONE 20:45 grpo-local/sandbox-gym/test_budget.py -- single GYM_BUDGET source (default 8192 unchanged)
+- 2026-10-02 20:51 [claude] DONE 20:51 grpo-local/handoff-gym/score.py -- wire gym_budget.check_server fail-fast (eval.py: pass api_key by keyword)
+- 2026-10-02 20:51 [claude] DONE 20:51 grpo-local/handoff-gym/tool_handoff.py -- wire gym_budget.check_server fail-fast (eval.py: pass api_key by keyword)
+- 2026-10-02 20:51 [claude] DONE 20:51 grpo-local/sandbox-gym/branch_collect.py -- wire gym_budget.check_server fail-fast (eval.py: pass api_key by keyword)
+- 2026-10-02 20:51 [claude] DONE 20:51 grpo-local/sandbox-gym/eval.py -- wire gym_budget.check_server fail-fast (eval.py: pass api_key by keyword)
+- 2026-10-02 20:53 [claude] OPEN grpo-local/sandbox-gym/web_tools.py -- fetch_url offset arg (Bionic parity)
+- 2026-10-02 20:53 [claude] OPEN grpo-local/sandbox-gym/tools.py -- fetch_url schema offset (additive only)
+- 2026-10-02 20:53 [claude] OPEN grpo-local/sandbox-gym/web_tools_parity.py -- BIONIC_DIR env + offset cases
+- 2026-10-02 20:53 [claude] OPEN grpo-local/sandbox-gym/web_tools_parity.mjs -- BIONIC_DIR env + offset cases
+- 2026-10-02 20:53 [claude] OPEN grpo-local/sandbox-gym/test_web_tools.py -- offset tests
+- 2026-10-02 20:53 [claude] OPEN grpo-local/sandbox-gym/selftest.py -- parity check (skip if no node/BIONIC_DIR)
+- 2026-10-02 20:53 [claude] OPEN grpo-local/sandbox-gym/docs/bionic-web-tools-spec.md -- document offset
+- 2026-10-02 20:57 [claude] OPEN grpo-local/sandbox-gym/doc_tools.py -- office_document mirror (OfficeCLI envelope, Bionic byte-parity) + make_pdf deterministic renderer shared with Bionic
+- 2026-10-02 20:57 [claude] OPEN grpo-local/sandbox-gym/doc_tools_parity.py, docs/bionic-doc-tools-spec.md -- new: parity test vs Bionic (BIONIC_DIR) + spec
+- 2026-10-02 20:57 [claude] OPEN grpo-local/sandbox-gym/doc_make.py, test_doc_make.py, data/holdout/smoke_docmake_t4_* -- DOCX tier t4 via office_document; holdout seeds from 9406-9449
+- 2026-10-02 20:57 [claude] OPEN grpo-local/sandbox-gym/tools.py -- additive office_document TOOLS entry (+make_pdf schema) only
+- 2026-10-02 20:57 [claude] OPEN grpo-local/sandbox-gym/agent.py -- additive office_document dispatch in execute_tool
+- 2026-10-02 20:57 [claude] OPEN grpo-local/.venv -- pip install python-docx

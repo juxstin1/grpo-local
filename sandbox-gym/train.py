@@ -50,7 +50,7 @@ def _model_class(model_name: str):
     return AutoModelForCausalLM
 
 
-def build_policy_and_ref(cfg: Config):
+def build_policy_and_ref(cfg: Config, init_adapter: str | None = None):
     """(policy, ref, tokenizer). ref is None under LoRA: reference logprobs come
     from the same model with the adapter disabled, so no second base in VRAM."""
     tokenizer = AutoTokenizer.from_pretrained(cfg.serve.model_name)
@@ -59,6 +59,12 @@ def build_policy_and_ref(cfg: Config):
                     cfg.serve.model_name, torch_dtype=cfg.train.torch_dtype,
                     low_cpu_mem_usage=True,
                 ))
+    if init_adapter:
+        # Start from an SFT adapter: merge it into the base, then train a fresh
+        # LoRA on top. "Adapter disabled" is then the SFT model, so the KL ref is
+        # that model (not the raw base). The saved LoRA is a delta over the merge.
+        from peft import PeftModel
+        base = PeftModel.from_pretrained(base, init_adapter).merge_and_unload()
     base = base.to(device=cfg.train.resolved_device)  # type: ignore[call-arg]
     base.eval()
     if cfg.train.grad_checkpointing:
@@ -100,6 +106,8 @@ def run_step(policy, ref, tokenizer, tasks, cfg) -> tuple[float, dict]:
         total_loss += grpo_backward(policy, ref, group, cfg,
                                     scale=1.0 / len(batch))
         r = [t.reward for t in group]
+        print(f"[group] {task.name}: pass {sum(x > 0 for x in r)}/{len(r)} rewards={r}",
+              flush=True)
         rewards.extend(r)
         if len(set(r)) == 1:
             dead_groups += 1
@@ -127,6 +135,11 @@ def main() -> None:
     ap.add_argument("--seeds", required=True, help="e.g. 1000-1009 or 1000,1002")
     ap.add_argument("--family", default="find")
     ap.add_argument("--runner", default="docker")
+    ap.add_argument("--init-adapter", default=None,
+                    help="SFT LoRA to merge before training (e.g. r3); becomes the KL ref")
+    ap.add_argument("--pool", default=None,
+                    help="file of task names to keep (prescreened: sometimes solved)")
+    ap.add_argument("--task-batch", type=int, default=None, help="groups per step")
     a = ap.parse_args()
 
     cfg = Config()
@@ -134,6 +147,8 @@ def main() -> None:
         cfg.train.total_steps = a.steps
     if a.group_size:
         cfg.train.group_size = a.group_size
+    if a.task_batch:
+        cfg.train.task_batch = a.task_batch
     if a.model:
         cfg.serve.model_name = a.model
     cfg.episode.family = a.family
@@ -153,16 +168,20 @@ def main() -> None:
     vram.install()
     policy = ref = optim = None
     try:
-        policy, ref, tokenizer = build_policy_and_ref(cfg)
+        policy, ref, tokenizer = build_policy_and_ref(cfg, a.init_adapter)
         optim = torch.optim.AdamW(
             [p for p in policy.parameters() if p.requires_grad], lr=cfg.train.lr)
         tasks = make_task_pool(cfg, seeds, a.family)
+        if a.pool:
+            keep = {ln.strip() for ln in open(a.pool, encoding="utf-8") if ln.strip()}
+            tasks = [t for t in tasks if t.name in keep]
         print(f"[train] {len(tasks)} tasks")
         if not tasks:
             raise SystemExit("no tasks; pick seeds/family that generate tasks")
 
         worst_prompt = max(
-            len(encoding.encode_prompt(tokenizer, system_prompt(t.tools),
+            len(encoding.encode_prompt(tokenizer, system_prompt(
+                t.tools, cfg.episode.max_turns if cfg.episode.turn_counter else None),
                                        t.prompt, cfg.episode.thinking))
             for t in tasks)
         if worst_prompt >= cfg.train.max_seq_tokens:

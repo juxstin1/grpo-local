@@ -52,6 +52,18 @@ def encode_prompt(tokenizer, system: str, user: str, thinking: bool) -> list[int
     )
 
 
+def observation_body(tool: str, args: dict, result: str,
+                     turn: int | None = None, max_turns: int | None = None) -> str:
+    """The ONE observation text, shared by the served loop (agent.observation_text),
+    local GRPO (rollout.py) and SFT segments (collect.py). With the turn counter
+    on it ends with "[turn t of N]" (t = the turn that made this call)."""
+    argstr = ", ".join(f"{k}={v}" for k, v in args.items()) or ""
+    body = f"Result of {tool}({argstr}):\n{result}"
+    if max_turns:
+        body += f"\n[turn {turn} of {max_turns}]"
+    return body
+
+
 def encode_observation(tokenizer, obs: str, thinking: bool) -> list[int]:
     """Non-trainable segment appended after an assistant tool call: the tool
     result as a user turn, then the assistant generation prompt again."""

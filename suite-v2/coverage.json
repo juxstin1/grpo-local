@@ -1,0 +1,70 @@
+{
+    "schema":  "suite-coverage-v1",
+    "suite_file":  "suite-v2/tasks.json",
+    "suite_version":  "public-development-v2",
+    "suite_sha256":  "382e9ba9f78cb8f1a36b2a6011b1f38735da18be76d4ed8dab81d638fd710d44",
+    "minimum_independent_roots":  2,
+    "required_capabilities":  [
+                                  "constrained-refactoring",
+                                  "approved-evidence-selection",
+                                  "revision-arithmetic",
+                                  "scoped-preservation",
+                                  "tool-error-recovery",
+                                  "long-context",
+                                  "conflicting-source-injection",
+                                  "underspecified-clarification",
+                                  "multistep-stateful-tools"
+                              ],
+    "roots":  [
+                  {
+                      "root_id":  "refactor/pricing-callers",
+                      "task_name":  "contract-rename-callers",
+                      "capabilities":  [
+                                           "constrained-refactoring",
+                                           "scoped-preservation"
+                                       ],
+                      "evidence":  "Expected Python ASTs require the symbol/import/caller rename; the contract preserves all other files. This is constrained refactoring, not general repair."
+                  },
+                  {
+                      "root_id":  "facts/approved-revision",
+                      "task_name":  "contract-reconcile-decisions",
+                      "capabilities":  [
+                                           "approved-evidence-selection",
+                                           "scoped-preservation"
+                                       ],
+                      "evidence":  "Exact typed JSON requires the highest approved revision separately per field while preserving sources. Draft exclusion does not test injected instructions or ambiguous source authority."
+                  },
+                  {
+                      "root_id":  "table/order-revisions",
+                      "task_name":  "contract-open-orders",
+                      "capabilities":  [
+                                           "revision-arithmetic",
+                                           "scoped-preservation"
+                                       ],
+                      "evidence":  "Exact ordered JSON requires latest revisions, cancelled-order exclusion, decimal totals and source preservation. Static input transformations do not test stateful tool recovery."
+                  },
+                  {
+                      "root_id":  "document/scoped-duplicate-line",
+                      "task_name":  "contract-scoped-section-edit",
+                      "capabilities":  [
+                                           "scoped-preservation"
+                                       ],
+                      "evidence":  "Exact target bytes remove only Beta\u0027s repeated line and preserve Alpha, blank lines and the archive."
+                  },
+                  {
+                      "root_id":  "recovery/edit-conflict",
+                      "task_name":  "contract-edit-conflict-recovery",
+                      "capabilities":  [
+                                           "tool-error-recovery",
+                                           "scoped-preservation"
+                                       ],
+                      "evidence":  "Harness injects one no-write edit conflict. Trusted dispatch evidence requires a full subsequent read, a later changed-file retry, and a later full saved-file readback; exact bytes and protected files remain independently graded. One short scripted failure mode, not general recovery or long-context competence."
+                  }
+              ],
+    "missing_capabilities":  [
+                                 "long-context",
+                                 "conflicting-source-injection",
+                                 "underspecified-clarification",
+                                 "multistep-stateful-tools"
+                             ]
+}

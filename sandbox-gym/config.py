@@ -5,17 +5,22 @@ Three sections:
   episode  the sandbox loop (budget, turns, which tools, where work happens)
   train    GRPO hyperparameters
 
-Budget is one number -- 8192 total prompt+completion tokens per episode,
-decided 2026-09-29 -- and is read by eval, collection and GRPO alike. Change
-it in one place.
+Budget and turn cap are ONE number each -- 8192 total prompt+completion tokens
+and 10 turns per episode (episode.budget, episode.max_turns),
+decided 2026-09-29 -- and is read by eval, collection and GRPO alike. The budget
+lives in grpo-local/gym_budget.py (default 8192; override env GYM_BUDGET or --budget).
 """
 
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import torch
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))  # grpo-local (appended: never shadows)
+from gym_budget import BUDGET  # noqa: E402  (THE episode budget; GYM_BUDGET / --budget)
 
 
 @dataclass
@@ -30,12 +35,23 @@ class Serve:
 
 @dataclass
 class Episode:
-    budget: int = 8192                       # total prompt+completion tokens (one budget)
-    max_turns: int = 10                      # tool rounds before we force-stop
+    budget: int = BUDGET                     # total prompt+completion tokens (one budget)
+    max_turns: int = 10                      # THE turn cap: eval, collect, GRPO, CLI.
+                                             # One number, like budget -- never a second
+                                             # copy (Train had its own 6 until 2026-09-29)
     thinking: bool = True                    # reasoning is never scored
     family: str = "find"                     # find | edit | fix
     runner: str = "docker"                   # docker (production) | host (selftest only)
     max_builds: int = 4                      # build/run_tests cap per episode
+    hint: str = ""                            # COLLECTION ONLY (context distillation):
+                                             # extra system line; stripped before SFT
+                                             # (sft/from_gym.py --strip-hint). Never eval.
+    turn_counter: bool = True                # tell her the turn budget: system line +
+                                             # "[turn t of N]" after every tool result
+    compact: bool = False                    # in-episode compaction (compact.py): note at
+                                             # 75% of budget + checkpoint tool; OFF = today
+    compact_note_mode: str = "off"           # harness note call: off (thinking off) | force
+    max_resets: int | None = None            # None = bounded only by turn cap + thrash guard
     data_root: Path = field(default_factory=lambda: Path("data"))
     toolset: dict = field(default_factory=lambda: {  # gym ring -> enabled tools
         "find": ["list_dir", "read_file", "search"],
@@ -68,7 +84,6 @@ class Train:
     top_p: float = 0.95
     max_new_tokens: int = 4096               # per turn
     max_seq_tokens: int = 12288              # whole trajectory; bounds VRAM (see vram.py)
-    max_turns: int = 6
 
     @property
     def torch_dtype(self) -> torch.dtype:

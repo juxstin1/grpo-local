@@ -1,0 +1,59 @@
+{
+ "note_pass_by_links_found": {
+  "1/8": "0/0",
+  "2/7": "0/0",
+  "2/8": "0/0",
+  "4/8": "0/0",
+  "5/7": "0/0",
+  "5/8": "0/0",
+  "6/8": "0/0"
+ },
+ "all": {
+  "candidates": 71,
+  "kept": 20,
+  "dropped_control": 51,
+  "empty_note_pass_rate": 0.296,
+  "note_pass_rate": null,
+  "over_cap_rate": null,
+  "median_note_tokens": null,
+  "mixed_groups": 0
+ },
+ "writer": "r3",
+ "reader": "r3",
+ "k": 4,
+ "budget": 8192,
+ "note_cap": 400,
+ "note_think_cap": 600,
+ "note_thinking": true,
+ "early": {
+  "candidates": 35,
+  "kept": 9,
+  "dropped_control": 26,
+  "empty_note_pass_rate": 0.3,
+  "note_pass_rate": null,
+  "over_cap_rate": null,
+  "median_note_tokens": null,
+  "mixed_groups": 0
+ },
+ "mid": {
+  "candidates": 29,
+  "kept": 8,
+  "dropped_control": 21,
+  "empty_note_pass_rate": 0.293,
+  "note_pass_rate": null,
+  "over_cap_rate": null,
+  "median_note_tokens": null,
+  "mixed_groups": 0
+ },
+ "late": {
+  "candidates": 7,
+  "kept": 3,
+  "dropped_control": 4,
+  "empty_note_pass_rate": 0.286,
+  "note_pass_rate": null,
+  "over_cap_rate": null,
+  "median_note_tokens": null,
+  "mixed_groups": 0
+ },
+ "note_mode": "off"
+}

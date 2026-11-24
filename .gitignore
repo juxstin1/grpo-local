@@ -22,3 +22,12 @@ evals/data/pools/
 sft/data/*.fail.jsonl
 sft/data/*.log
 
+
+# big / third-party (added 2026-10-02)
+tau2-bridge/src/
+_archive/**/*.tgz
+
+# local-only
+_archive/
+.planning/
+notebook/.obsidian/

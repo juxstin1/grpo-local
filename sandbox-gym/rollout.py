@@ -26,7 +26,7 @@ import torch
 
 import encoding
 import tools as T
-from agent import execute_tool
+from agent import counter_turns, run_action
 from config import Config
 from graders import ANSWER_RE
 from gyms import system_prompt
@@ -43,6 +43,9 @@ def sample_trajectory(
     cfg: Config,
     roll_idx: int = 0,
 ) -> Trajectory:
+    if cfg.episode.compact:
+        raise NotImplementedError("compaction runs through agent.run_episode "
+                                  "(eval / collect / train_grpo.py), not legacy rollout.py")
     ws = _fresh_workspace(cfg, task, roll_idx)
     tok_ids: list[int] = []
     trainable: list[bool] = []
@@ -53,10 +56,11 @@ def sample_trajectory(
         tok_ids.extend(ids)
         trainable.extend([learn] * len(ids))
 
-    append(encoding.encode_prompt(tokenizer, system_prompt(task.tools),
+    N = counter_turns(cfg)                    # turn counter (None when off)
+    append(encoding.encode_prompt(tokenizer, system_prompt(task.tools, N),
                                   task.prompt, cfg.episode.thinking), learn=False)
     turns: list[Turn] = []
-    for _ in range(cfg.train.max_turns):
+    for _ in range(cfg.episode.max_turns):
         budget = min(cfg.train.max_new_tokens,
                      cfg.train.max_seq_tokens - len(tok_ids))
         if budget <= 0:
@@ -76,10 +80,13 @@ def sample_trajectory(
             break  # plain answer: episode over
         if action is None or truncated:
             break  # no tool call, or budget ran out mid-stream
-        result = execute_tool(ws, action)
+        result = run_action(ws, action, task.tools)
         turn.action = action
         turn.obs = result
-        obs_ids = encoding.encode_observation(tokenizer, result, cfg.episode.thinking)
+        obs_ids = encoding.encode_observation(
+            tokenizer, encoding.observation_body(action.name, action.arguments, result,
+                                                 len(turns), N),
+            cfg.episode.thinking)
         if len(tok_ids) + len(obs_ids) >= cfg.train.max_seq_tokens:
             break
         append(obs_ids, learn=False)

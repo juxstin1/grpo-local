@@ -2,3 +2,6 @@
 *.py text eol=lf
 *.md text eol=lf
 *.txt text eol=lf
+
+# Coverage pins suite bytes; keep their line endings stable across checkouts.
+/suite-v2/*.json text eol=lf

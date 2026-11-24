@@ -31,7 +31,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import requests
-from transformers import AutoTokenizer
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -40,7 +39,9 @@ sys.path[:0] = [str(EVALS), str(EVALS / "holdout"), str(EVALS / "datasets"), str
 import graders  # noqa: E402
 import seal  # noqa: E402  (root_of canonicalization, shared with the leak gate)
 import synth_multihop  # noqa: E402
+import registry as DR  # noqa: E402
 from sft_schema import MAX_TOKENS, template_sha, validate  # noqa: E402
+import admission as admission  # noqa: E402
 
 EVAL_SET = EVALS / "data" / "sets" / "post_cutoff_v1_5pb.json"
 SEALED = EVALS / "holdout" / "sealed"
@@ -48,15 +49,8 @@ OUT_DIR = HERE / "data"
 MIN_COMPLETION = 256  # a prompt that leaves less room than this can't produce a win
 
 
-def forbidden_roots() -> set[str]:
-    roots = set()
-    s = json.loads(EVAL_SET.read_text(encoding="utf-8"))
-    for items in s["items"].values():
-        roots |= {seal.root_of(it, "root_id") for it in items}
-    for d in SEALED.iterdir() if SEALED.exists() else []:
-        roots |= set(json.loads((d / "roots.json").read_bytes())["root_ids"])
-    roots.discard(None)
-    return roots
+def forbidden_roots(registry_path=None) -> set[str]:
+    return DR.load_registry(registry_path).forbidden_roots
 
 
 def mhqa_tasks(seeds: list[int], hops: str, per_hop: int, world: str | None) -> list[dict]:
@@ -91,6 +85,7 @@ def parse_seeds(s: str) -> list[int]:
 
 
 def load_tasks(a) -> list[dict]:
+    registry = DR.load_registry(getattr(a, "registry", None))
     tasks = []
     if a.mhqa_seeds:
         tasks += mhqa_tasks(parse_seeds(a.mhqa_seeds), a.hops, a.per_hop, a.world)
@@ -100,7 +95,11 @@ def load_tasks(a) -> list[dict]:
     tasks = [t for t in tasks if t["root_id"] not in excluded]
     pool = []
     for p in a.pool:
-        pool += [t for t in graders.load_pool(p) if t.get("root_id") not in excluded]
+        pool += registry.load_pool(p)
+    # Reject ambiguous IDs before exclusions/sampling can hide a collision.
+    DR.assert_unique_ids(tasks + pool)
+    registry.validate_training_rows(tasks + pool)
+    pool = [t for t in pool if t.get("root_id") not in excluded]
     if a.limit and len(pool) > a.limit:
         pool = random.Random(a.seed).sample(pool, a.limit)
     return tasks + pool
@@ -109,6 +108,8 @@ def load_tasks(a) -> list[dict]:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--pool", nargs="*", default=[])
+    ap.add_argument("--registry", default=os.environ.get(DR.ENV), help="Explicit public dataset registry")
+    ap.add_argument("--allow-model-run", action="store_true", help="Requires separate operator authorization")
     ap.add_argument("--mhqa-seeds", help="invented-world seeds, e.g. 1000-1019 (never the eval seed)")
     ap.add_argument("--hops", default="2,3")
     ap.add_argument("--per-hop", type=int, default=4, help="mhqa tasks per hop per seed")
@@ -129,7 +130,16 @@ def main() -> None:
     ap.add_argument("--top-p", type=float, default=0.95)
     ap.add_argument("--workers", type=int, default=64)
     a = ap.parse_args()
-
+    if not a.allow_model_run:
+        raise SystemExit("Model execution disabled; --allow-model-run requires separate operator authorization")
+    registry = DR.load_registry(a.registry)
+    tasks = load_tasks(a)
+    DR.assert_unique_ids(tasks)
+    registry.validate_training_rows(tasks)
+    admission.require_registered_tasks(tasks, admission.build_task_index(registry))
+    graders.preflight(tasks)  # unsupported tests/executor configuration fail before tokenizer/model loading
+    refused = 0  # overlaps now fail closed instead of silently skipping tasks
+    from transformers import AutoTokenizer
     tok = AutoTokenizer.from_pretrained(a.model)
     eos = tok.convert_tokens_to_ids("<|im_end|>")
     tsha = template_sha(tok)
@@ -139,13 +149,6 @@ def main() -> None:
     except Exception:
         rev = "unknown"
 
-    bad = forbidden_roots()
-    tasks, refused = [], 0
-    for t in load_tasks(a):
-        if seal.root_of(t, "root_id") in bad or not t.get("root_id"):
-            refused += 1
-            continue
-        tasks.append(t)
     print(f"[collect] {len(tasks)} tasks ({refused} refused by leak gate), "
           f"{a.attempts} attempts each", flush=True)
 
@@ -191,7 +194,13 @@ def main() -> None:
                                "stored ids would not match training; aborting")
         ch = data["choices"][0]
         cids = ch["token_ids"]
-        passed, detail = graders.grade(t, ch["message"].get("content") or "")
+        # Grade the decoded training target, not a separate provider content field.
+        verification_response = tok.decode(cids, skip_special_tokens=True)
+        try:
+            passed, detail = graders.grade(t, verification_response)
+        except graders.InvalidGrading as exc:
+            # Invalid infrastructure/tests are neither wins nor negative training examples.
+            return {"t": t, "k": k, "status": f"invalid-grading:{type(exc).__name__}", "n": len(cids)}
         if ch["finish_reason"] != "stop" or not cids or cids[-1] != eos:
             return {"t": t, "k": k, "status": "truncated", "passed": False, "n": len(cids),
                     "fail": fail_rec(t, k, "truncated", pids, cids, ch)}
@@ -200,18 +209,22 @@ def main() -> None:
                     "fail": fail_rec(t, k, "fail", pids, cids, ch)}
         rec = {
             "id": f"{t['uid']}-a{k}", "root_id": t["root_id"], "bucket": t["dataset"],
+            "uid": t["uid"], "original_uid": t.get("original_uid", t["uid"]),
+            "source_lineage": t.get("source_lineage", []), "dataset_registry_sha256": registry.sha256,
             "source": t.get("source", ""), "split": "train",
             "messages": [{**m, "train": False} for m in msgs],
             "prompt_ids": pids, "completion_ids": cids,
             "completion_text": tok.decode(cids, skip_special_tokens=False),
+            "verification_response": verification_response,
             "n_tokens": len(pids) + len(cids),
-            "grade": {"pass": True, "detail": detail},
+            "grade": {"pass": True, "status": "valid", "detail": detail},
             "model": f"{a.model}@{rev}" + (f"+{a.served_model}" if a.served_model else ""),
             "tokenizer_template_sha": tsha,
             "sampling": {"temperature": a.temperature, "top_p": a.top_p,
                          "max_tokens": body["max_tokens"]},
         }
         validate(rec, eos)
+        rec['admission_evidence'] = admission.make_evidence(t, rec, registry.sha256)
         return {"t": t, "k": k, "status": "win", "passed": True, "rec": rec, "n": len(cids)}
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -250,14 +263,15 @@ def main() -> None:
 
     by_bucket: dict[str, dict] = {}
     for st in per_task.values():
-        b = by_bucket.setdefault(st["bucket"], {"tasks": 0, "never": 0, "sometimes": 0, "always": 0,
+        b = by_bucket.setdefault(st["bucket"], {"tasks": 0, "never": 0, "sometimes": 0, "always": 0, "invalid_only": 0,
                                                 "attempts_truncated": 0, "kept": 0})
         b["tasks"] += 1
         b["kept"] += st["kept"]
         b["attempts_truncated"] += st["truncated"]
         graded = st["pass"] + st["fail"] + st["truncated"]
-        b["never" if st["pass"] == 0 else "always" if st["pass"] == graded else "sometimes"] += 1
+        b["invalid_only" if not graded else "never" if st["pass"] == 0 else "always" if st["pass"] == graded else "sometimes"] += 1
     stats = {"name": a.name, "model": f"{a.model}@{rev}", "attempts": a.attempts,
+             "dataset_registry_sha256": registry.sha256,
              "args": {**vars(a), "api_key": None},  # never write the key to disk
              "refused_leak_gate": refused, "skipped_prompt_too_long": too_long,
              "by_bucket": by_bucket, "per_task": per_task}

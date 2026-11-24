@@ -1,0 +1,49 @@
+{
+ "tag": "stubtest-tool",
+ "writer": "r3",
+ "reader": "r3",
+ "states": 5,
+ "k": 2,
+ "reads_per_note": 1,
+ "budget": 8192,
+ "turn_rule": "reader turns = cap - cut_turn",
+ "blank_heldout": {
+  "pass": 0,
+  "n": 10,
+  "read_rate": 0.0
+ },
+ "oracle": {
+  "notes": 10,
+  "written": 10,
+  "over": 0,
+  "err": 0,
+  "reads": 10,
+  "read_pass": 10,
+  "note_pass": 10,
+  "read_rate": 1.0,
+  "note_rate": 1.0
+ },
+ "off": {
+  "notes": 10,
+  "written": 10,
+  "over": 0,
+  "err": 0,
+  "reads": 10,
+  "read_pass": 4,
+  "note_pass": 4,
+  "read_rate": 0.4,
+  "note_rate": 0.4
+ },
+ "force": {
+  "notes": 10,
+  "written": 10,
+  "over": 0,
+  "err": 0,
+  "reads": 10,
+  "read_pass": 4,
+  "note_pass": 4,
+  "read_rate": 0.4,
+  "note_rate": 0.4
+ },
+ "verdict": "ok: oracle clearly beats blank"
+}

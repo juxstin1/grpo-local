@@ -1,0 +1,15 @@
+{
+ "tasks": 4,
+ "snapshots": 4,
+ "groups": 4,
+ "mixed_groups": 4,
+ "note_pass": "8/16",
+ "over_cap": 0,
+ "skips": {},
+ "writer": "stub",
+ "reader": "stub",
+ "compact_at": 2048,
+ "k": 4,
+ "reads": 1,
+ "note_mode": "think"
+}

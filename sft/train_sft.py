@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import random
 import sys
 from pathlib import Path
@@ -25,21 +26,17 @@ from types import SimpleNamespace
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-sys.path[:0] = [str(ROOT), str(HERE)]
-
-import torch  # noqa: E402
-
-import vram  # noqa: E402
-from collect import forbidden_roots, seal  # noqa: E402
-from config import Config  # noqa: E402
-from rl import _masked_logprobs  # noqa: E402
-from sft_schema import load, template_sha, validate  # noqa: E402
-from train import build_policy_and_ref  # noqa: E402
+sys.path[:0] = [str(ROOT), str(HERE), str(ROOT / "evals" / "datasets")]
+import registry as DR  # noqa: E402
+from sft_schema import load, template_sha, validate, training_tokens_and_mask  # noqa: E402
+import admission as admission  # noqa: E402
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", nargs="+", required=True)
+    ap.add_argument("--registry", default=os.environ.get(DR.ENV), help="Explicit public dataset registry")
+    ap.add_argument("--allow-model-run", action="store_true", help="Required even for tokenizer-loading dry runs")
     ap.add_argument("--name", required=True)
     ap.add_argument("--epochs", type=int, default=1)
     ap.add_argument("--batch", type=int, default=8, help="examples per optimizer step")
@@ -49,7 +46,26 @@ def main() -> None:
     ap.add_argument("--max-per-root", type=int, default=2)
     ap.add_argument("--dry-run", action="store_true", help="validate data only, no GPU")
     a = ap.parse_args()
-
+    if not a.allow_model_run:
+        raise SystemExit("Model execution disabled; tokenizer-loading dry runs also require --allow-model-run")
+    registry = DR.load_registry(a.registry)
+    recs, shas = [], {}
+    for p in a.data:
+        shas[str(Path(p).resolve())] = hashlib.sha256(Path(p).read_bytes()).hexdigest()
+        recs.extend(load(p))
+    DR.assert_unique_ids(recs, "id")
+    registry.validate_training_rows(recs)
+    for record in recs:
+        if record.get("dataset_registry_sha256") != registry.sha256 or record.get("grade", {}).get("status") != "valid":
+            raise DR.RegistryError("Collection lacks this registry and a valid grading receipt; legacy wins require requalification")
+    if not recs:
+        raise DR.RegistryError("No training records")
+    task_index = admission.check_dataset(recs, registry)
+    import torch
+    import vram
+    from config import Config
+    from rl import _masked_logprobs
+    from train import build_policy_and_ref
     cfg = Config()
     if a.model:
         cfg.model_name = a.model
@@ -60,18 +76,12 @@ def main() -> None:
     tok = AutoTokenizer.from_pretrained(cfg.model_name)
     eos = tok.convert_tokens_to_ids("<|im_end|>")
     tsha = template_sha(tok)
-    bad = forbidden_roots()
-
-    recs, shas = [], {}
-    for p in a.data:
-        shas[str(Path(p).resolve())] = hashlib.sha256(Path(p).read_bytes()).hexdigest()
-        for r in load(p):
-            validate(r, eos)
-            if r["tokenizer_template_sha"] != tsha:
-                sys.exit(f"{r['id']}: tokenizer/template changed since collection - ids are stale")
-            if seal.root_of(r, "root_id") in bad:
-                sys.exit(f"{r['id']}: root {r['root_id']} is eval/holdout - refusing to train on it")
-            recs.append(r)
+    admission_replays = {}
+    for r in recs:
+        validate(r, eos)
+        if r["tokenizer_template_sha"] != tsha:
+            sys.exit(f"{r['id']}: tokenizer/template changed since collection - ids are stale")
+        admission_replays[r['id']] = admission.verify_tokens_and_replay(r, tok, registry, task_index)
     # Max wins per root task across ALL files (collections can overlap), so easy
     # tasks don't dominate. Dedupe identical completions first.
     seen, per_root, kept = set(), {}, []
@@ -114,9 +124,8 @@ def main() -> None:
                 optim.zero_grad()
                 loss_val = 0.0
                 for r in batch:
-                    ids = r["prompt_ids"] + r["completion_ids"]
-                    ex = SimpleNamespace(tok_ids=ids,
-                                         trainable=[False] * len(r["prompt_ids"]) + [True] * len(r["completion_ids"]))
+                    ids, mask = training_tokens_and_mask(r, eos)
+                    ex = SimpleNamespace(tok_ids=ids, trainable=mask)
                     vram.check(policy, len(ids), len(r["completion_ids"]), cfg.grad_checkpointing,
                                where=f"sft {r['id']}")
                     logp = _masked_logprobs(policy, ex, cfg.resolved_device)
@@ -133,6 +142,8 @@ def main() -> None:
         policy.save_pretrained(str(out))
         (out / "sft_manifest.json").write_text(json.dumps({
             "data": shas, "records": len(recs), "by_bucket": by_bucket, "completion_tokens": ntok,
+            "dataset_registry_sha256": registry.sha256,
+            "admission_replays": {r['id']: admission_replays[r['id']] for r in recs},
             "epochs": a.epochs, "batch": a.batch, "lr": a.lr, "model": cfg.model_name,
             "tokenizer_template_sha": tsha, "lora_r": cfg.lora_r, "lora_targets": cfg.lora_targets,
         }, indent=1), encoding="utf-8")

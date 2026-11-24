@@ -20,11 +20,14 @@ import repo_gen
 CANARY = "GYM-HOLDOUT-SEALED-2026-09-29"
 
 
-def build(seeds: list[int], family: str, out: Path) -> Path:
+def build(seeds: list[int], family: str, out: Path, keep=None) -> Path:
+    """keep: optional spec filter (e.g. one hop count of mhqa_t per holdout)."""
     out.parent.mkdir(parents=True, exist_ok=True)
     items = []
     for s in seeds:
         for spec in repo_gen.make_specs(s, family):
+            if keep and not keep(spec):
+                continue
             items.append({
                 "name": spec["name"], "family": spec["family"], "seed": s,
                 "prompt": spec["prompt"], "ground_truth": spec["ground_truth"],

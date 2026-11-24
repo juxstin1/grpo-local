@@ -1,0 +1,3 @@
+# Offline qualification imports the existing HTTP adapters but mocks all calls.
+# Version verified in the qualification environment; no model libraries required.
+requests==2.33.1

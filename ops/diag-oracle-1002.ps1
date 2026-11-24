@@ -1,0 +1,1 @@
+while (Get-Process -Id 11360,23008,23308 -ErrorAction SilentlyContinue) { Start-Sleep 30 }; Set-Location handoff-gym; ..\.venv\Scripts\python.exe -u score.py --hops 8 --states 5 --k 2 --workers 4 --note-mode oracle --tag diag-oracle-h8

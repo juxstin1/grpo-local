@@ -37,10 +37,11 @@ REPO = EVALS.parent
 sys.path[:0] = [str(HERE), str(EVALS), str(REPO)]
 import graders  # noqa: E402
 import roots as R  # noqa: E402
+import registry as DR  # noqa: E402 (stdlib-only public identity helpers)
 
 MODEL = "Qwen/Qwen3.5-4B"
 CUTOFF = "2026-03-02"            # Qwen3.5 public release date; no official training cutoff exists
-LEETCODE_MARGIN_DAYS = 7         # LeetCode dates are first-UGC upper bounds; demand a margin for eval
+LEETCODE_MARGIN_DAYS = 7         # Historical metadata only; upper bounds never prove post-cutoff publication
 VERSION = "v1"
 SEED = "grpo-local:qwen3.5-4b:2026-03-02"
 HOLDOUT_FRAC = 0.4               # share of post-cutoff roots sealed as holdout
@@ -114,8 +115,6 @@ def date_record(r: dict, date: str | None, kind: str) -> None:
         r["_when"] = "pre"
     elif kind == "exact":
         r["_when"] = "post"
-    elif kind == "leetcode" and date >= add_days(CUTOFF, LEETCODE_MARGIN_DAYS):
-        r["_when"] = "post"
     else:
         r["_when"] = "ambiguous"
 
@@ -149,7 +148,7 @@ def arxiv_v1_dates(ids: set[str]) -> dict[str, str]:
             if m_id and m_pub:
                 cache[m_id.group(1)] = m_pub.group(1)
         time.sleep(3)  # arXiv API etiquette
-    ARXIV_CACHE.write_text(json.dumps(cache, indent=0, sort_keys=True))
+    ARXIV_CACHE.write_bytes(json.dumps(cache, indent=0, sort_keys=True).encode("utf-8"))
     return cache
 
 
@@ -259,8 +258,8 @@ def load_code() -> list[dict]:
              "lineage": [slug_key(w["title"])], "skel_text": text, "idents": sig[1] if sig else [], "emit": False}
         date_record(r, date, "leetcode")
         recs.append(r)
-        if r["_when"] == "pre":
-            continue                                   # pre-cutoff LeetCode with real tests comes from neulab
+        if r["_when"] != "post":
+            continue  # upper bounds cannot qualify evaluation; pre-cutoff tests come from neulab
         if not w["frontend_id"].isdigit() or int(w["frontend_id"]) <= max_pre_fid:
             DROPS["code"]["lc-id-not-monotonic"] += 1
             continue
@@ -410,7 +409,7 @@ def hfrac(root: str) -> float:
     return int(hashlib.sha256(f"{SEED}:{root}".encode()).hexdigest()[:12], 16) / 16**12
 
 
-PUBLIC = ("uid", "dataset", "source", "root_id", "first_published", "date_basis", "prompt", "answer", "tests",
+PUBLIC = ("uid", "original_uid", "dataset", "source", "lineage", "root_id", "first_published", "date_basis", "prompt", "answer", "tests",
           "tests_basis", "tests_truncated")
 
 
@@ -421,8 +420,29 @@ def public(r: dict) -> dict:
 def write_jsonl(p: Path, rows: list[dict]) -> str:
     p.parent.mkdir(parents=True, exist_ok=True)
     body = "".join(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n" for r in rows)
-    p.write_text(body, encoding="utf-8")
-    return hashlib.sha256(body.encode()).hexdigest()
+    raw = body.encode("utf-8")
+    p.write_bytes(raw)
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def assign_content_ids(records: list[dict]) -> list[dict]:
+    """Source IDs can repeat for different questions; never key clustering on them."""
+    unique = {}
+    for record in records:
+        record["original_uid"] = record.get("original_uid", record["uid"])
+        record["uid"] = DR.stable_uid(record)
+        previous = unique.get(record["uid"])
+        if previous is None:
+            unique[record["uid"]] = record
+        elif {previous["_when"], record["_when"]} != {previous["_when"]}:
+            # Do not silently pick one of contradictory date annotations.
+            raise ValueError("Identical task identity has conflicting publication classification")
+    return list(unique.values())
+
+
+def merge_provenance(previous: dict, current: dict) -> dict:
+    """Retain source evidence when only a subset of datasets is rebuilt."""
+    return {**previous, **current}
 
 
 def sh(*args) -> tuple[int, str]:
@@ -436,7 +456,7 @@ def sh(*args) -> tuple[int, str]:
 def process(ds: str) -> dict:
     t0 = time.time()
     log.info("== %s: loading sources", ds)
-    recs = LOADERS[ds]()
+    recs = assign_content_ids(LOADERS[ds]())
     log.info("  %s: %d records loaded", ds, len(recs))
     k, tau = SKEL[ds]
     root_of = R.cluster(recs, k, tau, log)
@@ -495,8 +515,10 @@ def process(ds: str) -> dict:
             if code:
                 raise SystemExit(f"sealing {name} failed")
         code, _ = sh("verify", sdir)
+        if code:
+            raise SystemExit(f"seal verification failed for {name}; no pools published")
         out["seal"] = json.loads((sdir / "manifest.json").read_text())["merkle_root"]
-        out["seal_verified"] = code == 0
+        out["seal_verified"] = True
     else:
         log.warning("  %s: no post-cutoff holdout items", ds)
 
@@ -524,7 +546,7 @@ def write_rules_table(results: dict, stamp: str) -> None:
             "|---|---|---|---|---|---|---|"]
     src = {"math": ("MathArena ArXivMath 03–08/2026, arXiv v1 date >= cutoff",
                     "AIME/HMMT/BRUMO/CMIMC/SMT/Apex 2023–Feb 2026, ArXivMath <= Feb 2026, arxivmath-training"),
-           "code": ("LeetCode problems first seen >= cutoff+7d, tests = statement examples w/ accepted-oracle outputs",
+           "code": ("Only independently proven exact publication dates qualify; first-activity upper bounds excluded",
                     "LiveCodeBench v1–v6 (2023-05..2025-04), neulab/leetcode"),
            "mhqa": ("AntiLeakBench method (Wikidata updates with start date >= cutoff) via SPARQL",
                     "MuSiQue-Ans v1.0 train+dev (2021)")}
@@ -536,7 +558,7 @@ def write_rules_table(results: dict, stamp: str) -> None:
     text = RULES.read_text(encoding="utf-8")
     text = re.sub(r"(<!-- BEGIN GENERATED -->\n).*?(<!-- END GENERATED -->)", lambda m: m.group(1) + table + m.group(2),
                   text, flags=re.S)
-    RULES.write_text(text, encoding="utf-8")
+    RULES.write_bytes(text.encode("utf-8"))
 
 
 def main() -> None:
@@ -552,9 +574,12 @@ def main() -> None:
     log.info("prepare %s | model %s | cutoff %s | leetcode margin %dd | holdout frac %.2f | seed %s",
              VERSION, MODEL, CUTOFF, LEETCODE_MARGIN_DAYS, HOLDOUT_FRAC, SEED)
     prev = {}
+    previous_provenance = {}
     latest = LOGS / "latest.json"
     if latest.exists():
-        prev = json.loads(latest.read_text(encoding="utf-8")).get("results", {})
+        previous = json.loads(latest.read_text(encoding="utf-8"))
+        prev = previous.get("results", {})
+        previous_provenance = previous.get("provenance", {})
     results = {k: v for k, v in prev.items()}
     for ds in a.datasets.split(","):
         results[ds] = process(ds)
@@ -566,7 +591,7 @@ def main() -> None:
         frozen["items"][ds] = [{**it, "id": it["uid"]} for it in its]
         frozen["buckets"][ds] = {"n": len(its), "max_tokens": graders.MAX_TOKENS[ds]}
     frozen.update(schema=f"post_cutoff_{VERSION}", model=MODEL, cutoff=CUTOFF, created=stamp[:8], seed=SEED)
-    set_path.write_text(json.dumps(frozen, ensure_ascii=False, indent=1), encoding="utf-8")
+    set_path.write_bytes(json.dumps(frozen, ensure_ascii=False, indent=1).encode("utf-8"))
     log.info("eval set -> %s (%s)", set_path, {k: v["n"] for k, v in frozen["buckets"].items()})
 
     # Baseline = BASELINE per bucket, drawn from the eval split (never the holdout), lowest hash(uid) first.
@@ -576,14 +601,15 @@ def main() -> None:
         base["items"][ds] = pick
         base["buckets"][ds] = {**frozen["buckets"][ds], "n": len(pick)}
     base_path = SETS / f"post_cutoff_{VERSION}_5pb.json"
-    base_path.write_text(json.dumps(base, ensure_ascii=False, indent=1), encoding="utf-8")
+    base_path.write_bytes(json.dumps(base, ensure_ascii=False, indent=1).encode("utf-8"))
     log.info("baseline set -> %s (%s)", base_path, {k: v["n"] for k, v in base["buckets"].items()})
 
-    summary = {"stamp": stamp, "model": MODEL, "cutoff": CUTOFF, "version": VERSION, "provenance": PROV,
+    summary = {"stamp": stamp, "model": MODEL, "cutoff": CUTOFF, "version": VERSION,
+               "provenance": merge_provenance(previous_provenance, PROV),
                "eval_set": str(set_path.relative_to(REPO)), "eval_set_sha256": sha256_file(set_path),
                "results": results}
     for p in (LOGS / f"prepare-{stamp}.json", latest):
-        p.write_text(json.dumps(summary, indent=1, sort_keys=True), encoding="utf-8")
+        p.write_bytes(json.dumps(summary, indent=1, sort_keys=True).encode("utf-8"))
     write_rules_table(results, stamp)
     log.info("done -> RULES.md table updated, summary logs/prepare-%s.json", stamp)
 

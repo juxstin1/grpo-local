@@ -45,7 +45,16 @@ def _chunk_logp(lm_head, h: torch.Tensor, targets: torch.Tensor) -> torch.Tensor
     return tgt - torch.logsumexp(logits, dim=-1)
 
 
+def _seqs(traj: Trajectory) -> list[tuple[list[int], list[bool]]]:
+    """The token sequences of a trajectory: its windows when compacted, else the one stream."""
+    return traj.windows or [(traj.tok_ids, traj.trainable)]
+
+
 def _masked_logprobs(model, traj: Trajectory, device: str) -> torch.Tensor:
+    if traj.windows:     # compacted: each context window / note call is its own forward
+        return torch.cat([_masked_logprobs(model, Trajectory(task=traj.task, turns=[],
+                                                             tok_ids=ids, trainable=tr),
+                                           device) for ids, tr in traj.windows])
     trainable = torch.tensor(traj.trainable, dtype=torch.bool, device=device)
     idx = trainable[1:].nonzero(as_tuple=True)[0] + 1  # token positions (j)
     if idx.numel() == 0:
@@ -74,7 +83,7 @@ def group_advantages(trajectories: List[Trajectory], eps: float = 1e-4) -> torch
 
 
 def _n_policy_tokens(traj: Trajectory) -> int:
-    return sum(traj.trainable[1:])
+    return sum(sum(tr[1:]) for _, tr in _seqs(traj))
 
 
 def grpo_backward(
@@ -104,19 +113,22 @@ def grpo_backward(
         n = _n_policy_tokens(traj)
         if n == 0:
             continue
-        vram.check(policy, len(traj.tok_ids), n, cfg.train.grad_checkpointing,
+        vram.check(policy, max(len(ids) for ids, _ in _seqs(traj)), n,
+                   cfg.train.grad_checkpointing,
                    where=f"backward ({traj.task.name})")
-        if ref is not None:
-            with torch.no_grad():
-                refv = _masked_logprobs(ref, traj, device)
-        else:
-            with torch.no_grad(), policy.disable_adapter():
-                refv = _masked_logprobs(policy, traj, device)
         pol = _masked_logprobs(policy, traj, device)
-
-        log_ratio = refv - pol                     # log(ref / pi)
-        kl = torch.exp(log_ratio) - log_ratio - 1  # k3: >= 0, correct gradient
-        loss = ((-a * pol).sum() + cfg.train.kl_beta * kl.sum()) * (scale / total_tokens)
+        loss = (-a * pol).sum()
+        if cfg.train.kl_beta:                      # beta 0: no reference pass at all
+            if ref is not None:
+                with torch.no_grad():
+                    refv = _masked_logprobs(ref, traj, device)
+            else:
+                with torch.no_grad(), policy.disable_adapter():
+                    refv = _masked_logprobs(policy, traj, device)
+            log_ratio = refv - pol                     # log(ref / pi)
+            kl = torch.exp(log_ratio) - log_ratio - 1  # k3: >= 0, correct gradient
+            loss = loss + cfg.train.kl_beta * kl.sum()
+        loss = loss * (scale / total_tokens)
         loss.backward()
         loss_val += loss.item()
 

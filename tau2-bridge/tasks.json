@@ -1,0 +1,29 @@
+{
+ "seed": 20261002,
+ "split": "test",
+ "per_domain": 5,
+ "eval_only": true,
+ "tasks": {
+  "airline": [
+   "24",
+   "48",
+   "32",
+   "45",
+   "35"
+  ],
+  "retail": [
+   "77",
+   "55",
+   "102",
+   "108",
+   "65"
+  ],
+  "telecom": [
+   "[service_issue]airplane_mode_on|break_apn_settings|lock_sim_card_pin|unseat_sim_card[PERSONA:None]",
+   "[service_issue]break_apn_settings|contract_end_suspension|lock_sim_card_pin|unseat_sim_card[PERSONA:Hard]",
+   "[service_issue]break_apn_settings|lock_sim_card_pin[PERSONA:None]",
+   "[mms_issue]break_apn_mms_setting|user_abroad_roaming_enabled_off[PERSONA:Hard]",
+   "[mobile_data_issue]bad_network_preference|bad_vpn|user_abroad_roaming_disabled_off[PERSONA:Hard]"
+  ]
+ }
+}

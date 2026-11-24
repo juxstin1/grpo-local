@@ -1,0 +1,53 @@
+{
+ "note_pass_by_links_found": {
+  "1/8": "0/1"
+ },
+ "all": {
+  "candidates": 42,
+  "kept": 1,
+  "dropped_control": 41,
+  "empty_note_pass_rate": 0.5,
+  "note_pass_rate": 0.0,
+  "over_cap_rate": 0.0,
+  "median_note_tokens": 308,
+  "mixed_groups": 0
+ },
+ "writer": "r3",
+ "reader": "r3",
+ "k": 1,
+ "budget": 8192,
+ "note_cap": 400,
+ "note_think_cap": 600,
+ "note_thinking": true,
+ "early": {
+  "candidates": 22,
+  "kept": 1,
+  "dropped_control": 21,
+  "empty_note_pass_rate": 0.5,
+  "note_pass_rate": 0.0,
+  "over_cap_rate": 0.0,
+  "median_note_tokens": 308,
+  "mixed_groups": 0
+ },
+ "mid": {
+  "candidates": 17,
+  "kept": 0,
+  "dropped_control": 17,
+  "empty_note_pass_rate": 0.5,
+  "note_pass_rate": null,
+  "over_cap_rate": null,
+  "median_note_tokens": null,
+  "mixed_groups": 0
+ },
+ "late": {
+  "candidates": 3,
+  "kept": 0,
+  "dropped_control": 3,
+  "empty_note_pass_rate": 0.5,
+  "note_pass_rate": null,
+  "over_cap_rate": null,
+  "median_note_tokens": null,
+  "mixed_groups": 0
+ },
+ "note_mode": "force"
+}

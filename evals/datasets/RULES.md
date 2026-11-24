@@ -1,6 +1,28 @@
 # Eval & training data rules — Qwen3.5-4B GRPO
 
-These rules are binding. `prepare.py` enforces them and refuses to write anything that breaks one.
+## Active repair policy — 2026-10-26
+
+This section supersedes conflicting historical claims below. See
+[`docs/EVAL-REPAIR-2026-10-26.md`](../../docs/EVAL-REPAIR-2026-10-26.md).
+
+- No model runs are authorized. The original datasets remain unchanged historical inputs.
+- First-activity upper bounds cannot prove post-cutoff publication, even with a
+  seven-day margin or larger problem ID. Such code dates are ambiguous.
+- Public development evaluation uses all registered evaluation exclusions, not
+  just the five-per-bucket subset. Missing/corrupt registry sources fail closed.
+- New derived pools carry unique content/source identities and explicit overlap
+  quarantine. An identity/provenance check is not a task-quality qualification.
+- Candidate code and expected answers run in separate trust domains. Code grading
+  requires the configured pinned CPU container; legacy same-interpreter assertion
+  suites remain disabled. Missing infrastructure is invalid, never reward zero.
+- Final/private evaluation requires a separate evaluator identity. Do not read or
+  reseal private task bodies as part of a repair. Existing manifests are used only
+  as exclusion metadata here.
+- The 5pb file currently contains five code and five synthetic multihop items,
+  with no math. Historical counts and grader self-test claims below are not current
+  qualification. Only new offline receipts establish repaired-source behavior.
+
+## Historical dataset policy and source notes
 
 1. **One model.** `Qwen/Qwen3.5-4B`. Cutoff = **2026-03-02**, its public release date. Qwen publishes no training cutoff, so the release date is the only defensible bound.
 2. **Eval = post-cutoff only.** Every eval and holdout item is dated on or after 2026-03-02. No pre-cutoff item appears in any eval.

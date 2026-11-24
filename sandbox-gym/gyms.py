@@ -23,8 +23,16 @@ read. Work efficiently: read what you need, then answer.
 """
 
 
-def system_prompt(enabled: list[str]) -> str:
-    return SYSTEM.format(TOOLS=T.describe_tools(enabled))
+def system_prompt(enabled: list[str], max_turns: int | None = None, hint: str = "") -> str:
+    """max_turns set = turn counter on: she is told her turn budget."""
+    s = SYSTEM.format(TOOLS=T.describe_tools(enabled))
+    if max_turns:
+        s += (f"You have {max_turns} turns for this task (each tool call or the final "
+              "ANSWER uses one); every tool result shows [turn t of "
+              f"{max_turns}]. Plan so you verify and answer before you run out.\n")
+    if hint:
+        s += hint.rstrip("\n") + "\n"
+    return s
 
 
 def spec_to_task(spec: dict) -> Task:

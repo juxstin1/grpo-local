@@ -1,0 +1,12 @@
+{
+ "source": "root@<pod-ip>:/workspace/obj/ckpt/rollouts.jsonl (pod, read-only scp 2026-09-30 16:17)",
+ "source_rows": 256,
+ "source_sha256": "14d80a485f22fd601a2db3f95e1beb7ab06d1c24eee5deb42b3dfab59fe48f77",
+ "line_indices_0based": [
+  7,
+  8,
+  52,
+  248
+ ],
+ "note": "find_h GRPO rollouts (steps 7-10), used only to test freeze/serialize/resume on real transcripts; not multi-hop"
+}

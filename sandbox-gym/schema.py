@@ -32,6 +32,7 @@ class Action:
 class Turn:
     content: str = ""                          # full generation (reasoning + response)
     resp_text: str = ""                        # response section only (post " response" marker)
+    reasoning: str = ""                        # served path: vLLM reasoning_content, sent back in history
     gen_ids: list[int] = field(default_factory=list)  # policy-sampled tokens (GRPO path)
     obs: str = ""                              # tool result shown to the model
     truncated: bool = False                    # hit the token budget without EOS
@@ -47,6 +48,10 @@ class Trajectory:
     reward: float = 0.0
     done: bool = False
     truncated: bool = False                               # any turn hit the budget
+    stop: str = ""                                        # agent.Episode.stop (answer | cap | no-action | empty)
+    # compaction: one (ids, trainable) per context window / note call, same reward.
+    # Empty = the single stream above (every non-compact trajectory).
+    windows: list = field(default_factory=list)
 
 
 RewardFn = Callable[[list[Turn], "Workspace"], float]

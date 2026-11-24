@@ -4,6 +4,8 @@ One module, two callers: eval.py (held-out eval) and rollout.py (GRPO reward).
 Same check, so train reward == eval metric:
 
   find  normalized exact match on the final ANSWER line vs the generated ground truth
+  edit/fix  require a final ANSWER line (a task isn't done until she says so);
+        a cap-hit with correct files scores 0 and is reported as a diagnostic
   edit  end-state content checks only (ring 2 has no run_tests; graded on the
         file after her edits)
   fix   the full test suite passes -- and, because the bug is only injected when
@@ -52,7 +54,10 @@ def truncated_final(turns: list[Turn]) -> bool:
 
 
 def normalize(s: str) -> str:
-    return s.strip().lower().rstrip(".").replace(", ", ",")
+    s = s.strip().strip("`").strip().replace("\\", "/")
+    if s.startswith("./"):
+        s = s[2:]
+    return s.lower().rstrip(".").replace(", ", ",")
 
 
 # --- family graders ----------------------------------------------------------
@@ -76,11 +81,29 @@ def _same_number(a: str, b: str) -> bool:
 
 
 def grade_edit(turns: list[Turn], workspace: Workspace,
-               checks: list[dict]) -> tuple[bool, str]:
+               checks: list[dict], require_answer: bool = True) -> tuple[bool, str]:
+    """Done means she said so: no ANSWER line = 0 even if the files are right
+    (require_answer=False is the eval's files-ok-but-never-answered diagnostic)."""
     if truncated_final(turns):
         return False, "truncated"
+    if require_answer and last_answer(turns) is None:
+        return False, "no-answer-line"
     for c in checks:
-        text = (workspace.root / c["file"]).read_text(encoding="utf-8")
+        if c["op"] == "effective":
+            from repo_gen_hard import effective_settings
+            eff = effective_settings(workspace.root, c["pkg"], c["settings"])
+            if eff is None:
+                return False, "settings unparseable"
+            for k, v in {**c["want"], **c["same"]}.items():
+                if k not in eff or not _same_number(str(eff[k]), str(v)):
+                    return False, f"{k}={eff.get(k)!r} want {v!r}"
+            continue
+        try:
+            text = (workspace.root / c["file"]).read_text(encoding="utf-8")
+        except OSError:
+            return False, f"missing file {c['file']}"
+        if c["op"] == "unchanged" and text != c["text"]:
+            return False, f"modified {c['file']}"
         if c["op"] == "contains" and c["needle"] not in text:
             return False, f"missing {c['needle']!r} in {c['file']}"
         if c["op"] == "absent" and c["needle"] in text:
@@ -88,16 +111,20 @@ def grade_edit(turns: list[Turn], workspace: Workspace,
     return True, "end-state ok"
 
 
-def grade_fix(turns: list[Turn], workspace: Workspace, pristine_tests: dict[str, str]) -> tuple[bool, str]:
+def grade_fix(turns: list[Turn], workspace: Workspace, pristine_tests: dict[str, str],
+              require_answer: bool = True) -> tuple[bool, str]:
     """Grade her code against tests she never touched.
 
     The tests in her workspace are visible and editable, so they are NOT the
     grade: copy the workspace, replace tests/ with the generator's pristine
     files, and require a per-grade random nonce in the runner's success line.
     Editing tests, deleting asserts, or exiting 0 early from core.py all fail.
+    No ANSWER line = 0 (same "done" as collect.py), unless require_answer=False.
     """
     if truncated_final(turns):
         return False, "truncated"
+    if require_answer and last_answer(turns) is None:
+        return False, "no-answer-line"
     nonce = uuid.uuid4().hex
     grade_root = workspace.root.parent / f"{workspace.root.name}__grade_{nonce[:8]}"
     try:
@@ -115,8 +142,11 @@ def grade_fix(turns: list[Turn], workspace: Workspace, pristine_tests: dict[str,
     return ok, out.split("\n")[0][:80]
 
 
-def pristine_tests(seed: int) -> dict[str, str]:
+def pristine_tests(seed: int, family: str = "fix") -> dict[str, str]:
     """The generator's own test files for a seed (never the agent's copies)."""
+    if family.endswith("_h"):
+        import repo_gen_hard
+        return repo_gen_hard.pristine_tests(seed)
     from repo_gen import generate_project
     return {k: v for k, v in generate_project(seed).files.items() if k.startswith("tests/")}
 
@@ -125,18 +155,57 @@ def pristine_tests(seed: int) -> dict[str, str]:
 
 def reward_for(task: Task) -> Callable[[list[Turn], Workspace], float]:
     """Task.reward: 1.0 / 0.0. find uses the transcript; edit/fix use the end state."""
-    if task.family == "find":
+    fam = task.family.removesuffix("_h").removesuffix("_m")
+    if fam == "mhqa_t":                    # full-chain grade_mhqa on the ANSWER line
+        from mhqa_tool import grade
+        def rw(turns, ws):
+            return 0.0 if truncated_final(turns) else float(grade(last_answer(turns), task.ground_truth)[0])
+        return rw
+    if fam == "repo_q":                    # questions over the real plugin repo (repo_q.py)
+        from repo_q import grade as grade_rq
+        def rw(turns, ws):
+            return 0.0 if truncated_final(turns) else float(grade_rq(last_answer(turns), task.ground_truth)[0])
+        return rw
+    if fam == "doc_make":                  # md/PDF report from notes + csv (doc_make.py)
+        from doc_make import reward_fn
+        return reward_fn(task)
+    if fam == "gather_produce":            # lookups -> FINDINGS.md (gather_produce.py)
+        from gather_produce import reward as reward_gp
+        return reward_gp(task)
+    if fam == "doc_digest":                # SUMMARY.md: all keys, no decoy, <= cap (doc_digest.py)
+        from doc_digest import grade_workspace
+        def rw(turns, ws):
+            if truncated_final(turns) or last_answer(turns) is None:
+                return 0.0
+            return float(grade_workspace(ws.root, task.ground_truth, log_as=ws.root.name)[0])
+        return rw
+    if fam == "find":
         def rw(turns, ws):
             return float(grade_find(turns, ws, task.ground_truth)[0])
         return rw
-    if task.family == "edit":
+    if fam in ("edit", "editv"):
         checks = task.meta.get("checks", [])
         def rw(turns, ws):
             return float(grade_edit(turns, ws, checks)[0])
         return rw
-    if task.family == "fix":
-        tests = pristine_tests(task.meta["seed"])
+    if fam == "fix":
+        tests = pristine_tests(task.meta["seed"], task.family)
         def rw(turns, ws):
             return float(grade_fix(turns, ws, tests)[0])
         return rw
     raise ValueError(f"unknown family {task.family}")
+
+
+def files_ok_ignoring_answer(task: Task, turns: list[Turn], ws: Workspace) -> bool:
+    """Diagnostic only, never a reward: would the end state pass without the
+    ANSWER-line requirement? (edit skill present, finishing skill missing)"""
+    fam = task.family.removesuffix("_h").removesuffix("_m")
+    if fam in ("edit", "editv"):
+        return grade_edit(turns, ws, task.meta.get("checks", []), require_answer=False)[0]
+    if fam == "fix":
+        return grade_fix(turns, ws, pristine_tests(task.meta["seed"], task.family),
+                         require_answer=False)[0]
+    if fam == "doc_digest":
+        from doc_digest import grade_workspace
+        return grade_workspace(ws.root, task.ground_truth)[0]
+    return False

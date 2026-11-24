@@ -1,0 +1,690 @@
+{
+ "name": "leg2-step20-mhqa-h34",
+ "model": "Qwen/Qwen3.5-4B@unknown",
+ "attempts": 2,
+ "args": {
+  "pool": [],
+  "mhqa_seeds": "6000-6009",
+  "hops": "3,4",
+  "per_hop": 2,
+  "world": null,
+  "limit": null,
+  "seed": 0,
+  "attempts": 2,
+  "keep_per_task": 0,
+  "name": "leg2-step20-mhqa-h34",
+  "model": "Qwen/Qwen3.5-4B",
+  "served_model": "leg2-final-step20",
+  "exclude_roots_from": [],
+  "base": "http://127.0.0.1:8000",
+  "api_key": null,
+  "temperature": 0.7,
+  "top_p": 0.95,
+  "workers": 32
+ },
+ "refused_leak_gate": 0,
+ "skipped_prompt_too_long": 0,
+ "by_bucket": {
+  "mhqa": {
+   "tasks": 40,
+   "never": 7,
+   "sometimes": 8,
+   "always": 25,
+   "attempts_truncated": 22,
+   "kept": 0
+  }
+ },
+ "per_task": {
+  "mhqa:synth:w3:6000:h3:Vevel_Traosul": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6000:Vevel_Traosul",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    580,
+    1732
+   ],
+   "all_tokens": [
+    580,
+    1732
+   ]
+  },
+  "mhqa:synth:w3:6003:h4:Gregre_Yenmide": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6003:Gregre_Yenmide",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    727,
+    1353
+   ],
+   "all_tokens": [
+    727,
+    1353
+   ]
+  },
+  "mhqa:synth:w3:6000:h3:Yenqo_Robrive": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6000:Yenqo_Robrive",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    903,
+    2224
+   ],
+   "all_tokens": [
+    903,
+    2224
+   ]
+  },
+  "mhqa:synth:w3:6003:h3:Greyen_Tanbrios": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6003:Greyen_Tanbrios",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1187,
+    1641
+   ],
+   "all_tokens": [
+    1187,
+    1641
+   ]
+  },
+  "mhqa:synth:w3:6003:h3:Ulcal_Tragrebri": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6003:Ulcal_Tragrebri",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1246,
+    1890
+   ],
+   "all_tokens": [
+    1246,
+    1890
+   ]
+  },
+  "mhqa:synth:w3:6002:h3:Grebri_Pazelmi": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6002:Grebri_Pazelmi",
+   "pass": 1,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1328
+   ],
+   "all_tokens": [
+    1328,
+    2737
+   ]
+  },
+  "mhqa:synth:w3:6001:h4:Qocal_Lucalsor": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6001:Qocal_Lucalsor",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1379,
+    1669
+   ],
+   "all_tokens": [
+    1379,
+    1669
+   ]
+  },
+  "mhqa:synth:w3:6001:h3:Ithve_Sorqoqo": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6001:Ithve_Sorqoqo",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1596,
+    2321
+   ],
+   "all_tokens": [
+    1596,
+    2321
+   ]
+  },
+  "mhqa:synth:w3:6000:h4:Marcal_Grebrika": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6000:Marcal_Grebrika",
+   "pass": 1,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1660
+   ],
+   "all_tokens": [
+    1660,
+    2681
+   ]
+  },
+  "mhqa:synth:w3:6000:h4:Sorbri_Sorcalsor": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6000:Sorbri_Sorcalsor",
+   "pass": 1,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1664
+   ],
+   "all_tokens": [
+    1664,
+    2679
+   ]
+  },
+  "mhqa:synth:w3:6001:h3:Kave_Tragretra": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6001:Kave_Tragretra",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1711,
+    1945
+   ],
+   "all_tokens": [
+    1711,
+    1945
+   ]
+  },
+  "mhqa:synth:w3:6001:h4:Roro_Sormilu": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6001:Roro_Sormilu",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1798,
+    1846
+   ],
+   "all_tokens": [
+    1798,
+    1846
+   ]
+  },
+  "mhqa:synth:w3:6002:h4:Dean_Tanvelqo": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6002:Dean_Tanvelqo",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    2100,
+    2550
+   ],
+   "all_tokens": [
+    2100,
+    2550
+   ]
+  },
+  "mhqa:synth:w3:6004:h3:Sorsor_Trapave": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6004:Sorsor_Trapave",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1077,
+    1989
+   ],
+   "all_tokens": [
+    1077,
+    1989
+   ]
+  },
+  "mhqa:synth:w3:6004:h3:Calbri_Ithmarcal": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6004:Calbri_Ithmarcal",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1792,
+    1868
+   ],
+   "all_tokens": [
+    1792,
+    1868
+   ]
+  },
+  "mhqa:synth:w3:6002:h3:Tantan_Pagretra": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6002:Tantan_Pagretra",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    2504,
+    2550
+   ],
+   "all_tokens": [
+    2504,
+    2550
+   ]
+  },
+  "mhqa:synth:w3:6003:h4:Anith_Royentan": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6003:Anith_Royentan",
+   "pass": 1,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    2635
+   ],
+   "all_tokens": [
+    2635,
+    2735
+   ]
+  },
+  "mhqa:synth:w3:6002:h4:Velve_Sorithyen": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6002:Velve_Sorithyen",
+   "pass": 0,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2729,
+    2729
+   ]
+  },
+  "mhqa:synth:w3:6005:h3:Brifa_Tandeka": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6005:Brifa_Tandeka",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1205,
+    1392
+   ],
+   "all_tokens": [
+    1205,
+    1392
+   ]
+  },
+  "mhqa:synth:w3:6004:h4:Migre_Sorsorlu": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6004:Migre_Sorsorlu",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1540,
+    1760
+   ],
+   "all_tokens": [
+    1540,
+    1760
+   ]
+  },
+  "mhqa:synth:w3:6005:h3:Ulan_Norcalpa": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6005:Ulan_Norcalpa",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1472,
+    2096
+   ],
+   "all_tokens": [
+    1472,
+    2096
+   ]
+  },
+  "mhqa:synth:w3:6006:h3:Brimar_Calnorul": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6006:Brimar_Calnorul",
+   "pass": 1,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1541
+   ],
+   "all_tokens": [
+    1541,
+    2691
+   ]
+  },
+  "mhqa:synth:w3:6006:h3:Yensor_Fanorpa": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6006:Yensor_Fanorpa",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1482,
+    1436
+   ],
+   "all_tokens": [
+    1482,
+    1436
+   ]
+  },
+  "mhqa:synth:w3:6005:h4:Anlu_Qoyenbri": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6005:Anlu_Qoyenbri",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1787,
+    2191
+   ],
+   "all_tokens": [
+    1787,
+    2191
+   ]
+  },
+  "mhqa:synth:w3:6007:h3:Fanor_Calanqo": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6007:Fanor_Calanqo",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    909,
+    2435
+   ],
+   "all_tokens": [
+    909,
+    2435
+   ]
+  },
+  "mhqa:synth:w3:6008:h3:Calyen_Pasoran": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6008:Calyen_Pasoran",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1092,
+    1049
+   ],
+   "all_tokens": [
+    1092,
+    1049
+   ]
+  },
+  "mhqa:synth:w3:6004:h4:Minor_Norvellu": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6004:Minor_Norvellu",
+   "pass": 0,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2694,
+    2694
+   ]
+  },
+  "mhqa:synth:w3:6007:h4:Ostan_Ulanul": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6007:Ostan_Ulanul",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1334,
+    1656
+   ],
+   "all_tokens": [
+    1334,
+    1656
+   ]
+  },
+  "mhqa:synth:w3:6009:h3:Ullu_Brimarvel": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6009:Ullu_Brimarvel",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    753,
+    2134
+   ],
+   "all_tokens": [
+    753,
+    2134
+   ]
+  },
+  "mhqa:synth:w3:6006:h4:Brinor_Kadelu": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6006:Brinor_Kadelu",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1831,
+    2070
+   ],
+   "all_tokens": [
+    1831,
+    2070
+   ]
+  },
+  "mhqa:synth:w3:6005:h4:Marde_Ithvelmi": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6005:Marde_Ithvelmi",
+   "pass": 1,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    2652
+   ],
+   "all_tokens": [
+    2684,
+    2652
+   ]
+  },
+  "mhqa:synth:w3:6009:h3:Tanro_Tanulfa": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6009:Tanro_Tanulfa",
+   "pass": 1,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1240
+   ],
+   "all_tokens": [
+    1240,
+    2735
+   ]
+  },
+  "mhqa:synth:w3:6006:h4:Luzel_Yenkafa": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6006:Luzel_Yenkafa",
+   "pass": 0,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2682,
+    2682
+   ]
+  },
+  "mhqa:synth:w3:6009:h4:Marlu_Ulcalan": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6009:Marlu_Ulcalan",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    1267,
+    1733
+   ],
+   "all_tokens": [
+    1267,
+    1733
+   ]
+  },
+  "mhqa:synth:w3:6008:h3:Anul_Qopalu": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6008:Anul_Qopalu",
+   "pass": 2,
+   "truncated": 0,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    2356,
+    2525
+   ],
+   "all_tokens": [
+    2356,
+    2525
+   ]
+  },
+  "mhqa:synth:w3:6007:h3:Briul_Qomarbri": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6007:Briul_Qomarbri",
+   "pass": 1,
+   "truncated": 1,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [
+    2651
+   ],
+   "all_tokens": [
+    2651,
+    2715
+   ]
+  },
+  "mhqa:synth:w3:6007:h4:Kavel_Sordeos": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6007:Kavel_Sordeos",
+   "pass": 0,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2708,
+    2708
+   ]
+  },
+  "mhqa:synth:w3:6008:h4:Fanor_Anithve": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6008:Fanor_Anithve",
+   "pass": 0,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2739,
+    2739
+   ]
+  },
+  "mhqa:synth:w3:6008:h4:Deith_Yenmarlu": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6008:Deith_Yenmarlu",
+   "pass": 0,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2739,
+    2739
+   ]
+  },
+  "mhqa:synth:w3:6009:h4:Gremar_Ansoryen": {
+   "bucket": "mhqa",
+   "root_id": "mhqa:synth:w3:6009:Gremar_Ansoryen",
+   "pass": 0,
+   "truncated": 2,
+   "fail": 0,
+   "error": 0,
+   "kept": 0,
+   "win_tokens": [],
+   "all_tokens": [
+    2725,
+    2725
+   ]
+  }
+ }
+}

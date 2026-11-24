@@ -22,11 +22,15 @@ import json
 import os
 import re
 import string
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from typing import Any
+import math
+
+try:
+    from .code_executor import execute, image_reference, InvalidGrading
+except ImportError:
+    from code_executor import execute, image_reference, InvalidGrading
 
 SYSTEM = {
     "math": (
@@ -73,7 +77,7 @@ def last_boxed(text: str) -> str | None:
         elif text[k] == "}":
             depth -= 1
             if depth == 0:
-                return text[j + 1 : k]
+                return text[j + 1 : k] if not text[k + 1:].strip() else None
     return None
 
 
@@ -89,7 +93,7 @@ def grade_math(record: dict, out: str) -> tuple[bool, str]:
     gold = parse(f"${record['answer']}$", parsing_timeout=None)
     got = parse(f"$\\boxed{{{pred}}}$", parsing_timeout=None)
     if not gold:
-        return False, "gold-unparseable"
+        raise InvalidGrading("gold-unparseable")
     ok = bool(verify(gold, got, timeout_seconds=None))
     return ok, f"pred={pred[:60]}"
 
@@ -110,9 +114,11 @@ CHAIN_SEP = re.compile(r"\s*(?:->|→|=>)\s*")
 
 
 def grade_mhqa(record: dict, out: str) -> tuple[bool, str]:
-    hits = ANSWER_RE.findall(strip_reasoning(out))
-    if not hits:
-        return False, "no-answer-line"
+    final = strip_reasoning(out).strip().splitlines()
+    match = re.fullmatch(r"ANSWER[ \t]*:[ \t]*(.+)", final[-1], re.I) if final else None
+    if not match or not match.group(1).strip():
+        return False, "no-final-answer-line"
+    hits = [match.group(1).strip()]
     chain = record["answer"].get("chain")
     if chain:
         # Full-chain grading: every hop must be named, in order. The leading
@@ -146,93 +152,65 @@ from math import *
 sys.setrecursionlimit(1 << 20)
 """
 
-# Runs inside the sandbox subprocess. Reads a JSON job from argv[1]; prints one
-# JSON result line. Candidate code is exec'd; nothing is imported from here.
-DRIVER = r'''
-import json, sys, math
-job = json.load(open(sys.argv[1], encoding="utf-8"))
-def same(a, b):
-    if isinstance(a, float) or isinstance(b, float):
-        try: return math.isclose(float(a), float(b), rel_tol=1e-5, abs_tol=1e-6)
-        except Exception: return False
-    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
-        return len(a) == len(b) and all(same(x, y) for x, y in zip(a, b))
-    return a == b
-g = {"__name__": "__sol__"}
-exec(job["prelude"] + "\n" + job["code"], g)
-cls_name, meth = job["entry"].split(".")  # "Solution.methodName"
-fn = getattr(g[cls_name](), meth)
-if job["kind"] == "assert":
-    exec(job["source"], g)
-    g["check"](fn)
-    print(json.dumps({"passed": 1, "total": 1, "outputs": None}))
-    sys.exit(0)
-outs, passed = [], 0
-for i, case in enumerate(job["cases"]):
-    args = [json.loads(line) for line in case["input"].split("\n") if line.strip()]
-    got = json.loads(json.dumps(fn(*args)))
-    outs.append(got)
-    if job["record"]:
-        continue
-    if not same(got, json.loads(case["output"])):
-        print(json.dumps({"passed": passed, "total": len(job["cases"]), "fail_at": i}))
-        sys.exit(0)
-    passed += 1
-print(json.dumps({"passed": passed, "total": len(job["cases"]), "outputs": outs if job["record"] else None}))
-'''
-
-
 def pick_code(text: str) -> str:
     fences = re.findall(r"```(?:python|py|python3)?[ \t]*\n(.*?)```", text, re.S)
-    if fences:
-        return fences[-1]  # final answer = last fenced block, not the longest draft
-    return ""
+    return fences[-1] if fences else ""
 
 
-def _run(job: dict, timeout: float) -> dict:
-    with tempfile.TemporaryDirectory(prefix="grade_") as td:
-        jp = Path(td) / "job.json"
-        dp = Path(td) / "driver.py"
-        jp.write_text(json.dumps(job), encoding="utf-8")
-        dp.write_text(DRIVER, encoding="utf-8")
-        env = {k: v for k, v in os.environ.items() if k in ("PATH", "SYSTEMROOT", "TEMP", "TMP")}
+def _same(a, b):
+    if isinstance(a, bool) or isinstance(b, bool):
+        return type(a) is type(b) and a == b
+    if type(a) is int and type(b) is int:
+        return a == b
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
         try:
-            r = subprocess.run(
-                [sys.executable, "-I", str(dp), str(jp)], capture_output=True, text=True,
-                timeout=timeout, cwd=td, env=env,
-            )
-        except subprocess.TimeoutExpired:
-            return {"error": "timeout"}
-        lines = [l for l in r.stdout.splitlines() if l.startswith("{")]
-        if r.returncode != 0 or not lines:
-            err = (r.stderr.strip().splitlines() or ["?"])[-1]
-            return {"error": f"runtime:{err[:80]}"}
-        return json.loads(lines[-1])
+            return math.isfinite(a) and math.isfinite(b) and math.isclose(a, b, rel_tol=1e-5, abs_tol=1e-6)
+        except OverflowError:
+            return False
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_same(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_same(a[k], b[k]) for k in a)
+    return type(a) is type(b) and a == b
 
 
 def run_functional(code: str, entry: str, cases: list[dict], record: bool = False,
                    kind: str = "functional", source: str = "") -> dict:
-    job = {"prelude": PRELUDE, "code": code, "entry": entry, "cases": cases, "record": record,
-           "kind": kind, "source": source}
-    n = max(1, len(cases))
-    return _run(job, timeout=min(10 + 3 * n, 120))
+    if kind != "functional":
+        raise InvalidGrading("legacy assertion suites require an independent verifier; disabled")
+    if not isinstance(cases, list) or not cases:
+        raise InvalidGrading("empty functional suite")
+    try:
+        inputs = [[json.loads(line) for line in c["input"].split("\n") if line.strip()] for c in cases]
+        expected = None if record else [json.loads(c["output"]) for c in cases]
+    except (KeyError, TypeError, ValueError, AttributeError) as exc:
+        raise InvalidGrading("invalid functional test data") from exc
+    # Expected outputs, assertion source, and verdict logic stay in this process.
+    result = execute(PRELUDE + "\n" + code, kind="functional", inputs=inputs, entry=entry,
+                     timeout=min(10 + 3 * len(cases), 120))
+    if result["status"] != "ok":
+        return {"error": result["reason"]}
+    outputs = result["outputs"]
+    if record:
+        return {"passed": 0, "total": len(cases), "outputs": outputs}
+    passed = sum(_same(got, want) for got, want in zip(outputs, expected))
+    return {"passed": passed, "total": len(cases), "outputs": None}
 
 
 def run_stdin(code: str, cases: list[dict]) -> tuple[bool, str]:
-    with tempfile.TemporaryDirectory(prefix="grade_") as td:
-        sol = Path(td) / "solution.py"
-        sol.write_text(code, encoding="utf-8")
-        for i, tc in enumerate(cases):
-            try:
-                r = subprocess.run([sys.executable, "-I", str(sol)], input=tc["input"],
-                                   capture_output=True, text=True, timeout=8, cwd=td)
-            except subprocess.TimeoutExpired:
-                return False, f"timeout@{i}"
-            got = "\n".join(l.rstrip() for l in r.stdout.strip().splitlines())
-            want = "\n".join(l.rstrip() for l in tc["output"].strip().splitlines())
-            if got != want:
-                return False, f"mismatch@{i}"
-        return True, f"pass:{len(cases)}/{len(cases)}"
+    if not isinstance(cases, list) or not cases:
+        raise InvalidGrading("empty stdin suite")
+    for i, tc in enumerate(cases):
+        if not isinstance(tc, dict) or not isinstance(tc.get("input"), str) or not isinstance(tc.get("output"), str):
+            raise InvalidGrading("invalid stdin test data")
+        result = execute(code, kind="stdin", stdin=tc["input"], timeout=20)
+        if result["status"] != "ok":
+            return False, result["reason"]
+        got = "\n".join(l.rstrip() for l in result["stdout"].strip().splitlines())
+        want = "\n".join(l.rstrip() for l in tc["output"].strip().splitlines())
+        if got != want:
+            return False, f"mismatch@{i}"
+    return True, f"pass:{len(cases)}/{len(cases)}"
 
 
 def grade_code(record: dict, out: str) -> tuple[bool, str]:
@@ -254,6 +232,34 @@ def grade_code(record: dict, out: str) -> tuple[bool, str]:
 
 
 GRADERS = {"math": grade_math, "code": grade_code, "mhqa": grade_mhqa}
+
+
+def preflight(records):
+    """Refuse unsupported/unconfigured code tasks before spending model calls."""
+    has_code = False
+    for record in records:
+        if record.get('dataset') != 'code':
+            continue
+        has_code = True
+        tests = record.get('tests', {})
+        if not isinstance(tests, dict) or tests.get('kind') not in ('functional', 'stdin'):
+            raise InvalidGrading('unsupported code verifier; assertion suites remain disabled')
+        cases = tests.get('cases')
+        if not isinstance(cases, list) or not cases:
+            raise InvalidGrading('empty code test suite')
+        for case in cases:
+            if not isinstance(case, dict) or not all(isinstance(case.get(k), str) for k in ('input', 'output')):
+                raise InvalidGrading('invalid code test data')
+            if tests['kind'] == 'functional':
+                try:
+                    [json.loads(line) for line in case['input'].split('\n') if line.strip()]
+                    json.loads(case['output'])
+                except (TypeError, ValueError) as exc:
+                    raise InvalidGrading('invalid functional JSON test data') from exc
+        if tests['kind'] == 'functional' and not re.fullmatch(r'[A-Za-z_]\w*\.[A-Za-z_]\w*', str(tests.get('entry', ''))):
+            raise InvalidGrading('invalid code entry')
+    if has_code:
+        image_reference()
 
 
 def grade(record: dict, out: str) -> tuple[bool, str]:
@@ -285,4 +291,8 @@ def make_task(record: dict):
 
 def load_pool(path: str | Path) -> list[dict]:
     with open(path, encoding="utf-8") as f:
-        return [json.loads(l) for l in f if l.strip()]
+        rows = [json.loads(l) for l in f if l.strip()]
+    ids = [r.get("uid", r.get("id")) for r in rows]
+    if any(not isinstance(uid, str) or not uid for uid in ids) or len(ids) != len(set(ids)):
+        raise InvalidGrading("pool requires nonempty unique item IDs")
+    return rows
