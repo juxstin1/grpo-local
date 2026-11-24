@@ -1,93 +1,99 @@
-# GRPO local
+<p align="center"><img src="docs/media/banner.png" alt="grpo-local: local SFT and GRPO for a small Qwen tool-use model, with audited evals" width="100%"></p>
 
-Training and evaluation workspace for Qwen models: supervised fine-tuning (SFT),
-group relative policy optimization (GRPO), sandbox tool use, and Bionic behavior checks.
+**Local SFT and GRPO post-training of Qwen3.5-4B for tool use, with the evaluation and reward checks written down.**
 
-## Start here
+<p align="center"><img src="docs/media/results.png" alt="Bar chart: base vs SFT r1/r2/r3 per-attempt pass rate on multi-hop QA, code holdout, BFCL, When2Call" width="100%"></p>
 
-For offline checks on a fresh checkout, use Python 3.12 and install only
-`requirements-offline.txt` into your virtual environment. Then run
-`.venv\Scripts\python.exe -B ops\qualify_offline.py`.
-This path needs no model libraries, datasets, sibling gym checkout, or model service.
-The [staged-source qualification receipt](docs/verification/offline-2026-10-26.json)
-records 223 passing tests and their source hashes.
+*Base vs three SFT rounds, per-attempt pass rate. Built from `evals/results/*/*.summary.json` (listed under Results).*
 
-- **Recovery task:** [deterministic edit failure and verification](docs/RECOVERY-TASK-2026-10-26.md).
-  The fifth public root requires observed recovery and saved-file readback.
-  It is qualified with mocked tools; models remain off and broad coverage is still incomplete.
-- **Teacher data and admission:** [evidence, quarantine and next offline task](docs/TEACHER-REPAIR-2026-10-26.md).
-  Historical wins need replay; prompt rewrites invalidate their grades. The
-  [coverage inventory](suite-v2/coverage.json) explicitly records missing capabilities.
-- **Endpoint and dataset repair:** [current behavior and limits](docs/EVAL-REPAIR-2026-10-26.md).
-  Evaluation summaries now require complete valid attempts and a bound run identity.
-  SFT collection requires an explicit versioned dataset registry; old wins need requalification.
-- **Current work, 2026-10-26:** [repair and ownership](docs/REPAIR-2026-10-26.md),
-  [public outcome-contract suite](suite-v2/README.md), and
-  [learner work instructions](prompts/work-contract-v1.md).
-- **Models remain off by user instruction.** Run
-  `.venv\Scripts\python.exe -B ops\qualify_offline.py` for offline acceptance.
-  The Q4 path now defaults to qualified artifact contracts; historical keyword
-  graders are labelled diagnostics. A private final evaluator is still unprovisioned.
+## What it does
 
-- [Environment and ownership rules](AGENTS.md): Windows PowerShell, Docker, file claims, and run controls.
-- [Latest recorded experiments, 2026-10-21](docs/EXP-2026-10-21-0.8B-THINKING-OFF.md): thinking-off probes, invalid evaluation subsets, and incomplete long-context runs.
-- [SWE-Gym integration pilot](swe-gym-bridge/README.md) and [qualification results](swe-gym-bridge/QUALIFICATION.md): real repository tasks through the existing harness, with upstream test grading.
-- [Daily notebook](notebook/Log/2026-10-21.md), [run register](notebook/Runs.md), and [file claims](notebook/Claims.md): dated evidence and ownership.
-- [Documentation index](docs/README.md) and [operations index](ops/README.md).
-- [Training methodology](SKILL.md): baseline, smoke, training, and evaluation gates. Its original defaults must be read alongside the dated experiment configuration.
+- Trains Qwen3.5-4B with LoRA: SFT on the model's own verified wins, then GRPO.
+- Evaluates with a resumable runner that scores per bucket, never as one blended number.
+- Treats request errors as invalid attempts, not as failures or results.
+- Grades tool-use tasks in gyms: `sandbox-gym` (file tools), `handoff-gym` (continuation notes), `tau2-bridge`.
+- Audits its own rewards and seals: counterexamples that earn false credit are documented and tested.
+- Admits SFT data only with registered inputs, token fidelity and verifier replay.
 
-The latest notebook records a stop on GPU work and subsequent individually
-approved probes. That is recorded history, not a live process check. Do not infer
-permission to launch a new evaluation from a command in an older document.
+## Results
 
-## Repository map
+All numbers are per-attempt pass rate, Qwen3.5-4B, 4096-token cap, small n.
 
-| Path | Purpose |
-| --- | --- |
-| Root Python files | Original training loop, configuration, rollout, loss, context, and memory helpers |
-| [sandbox-gym](sandbox-gym/README.md) | File-tool workspace harness, graders, evaluation, and tool parity checks |
-| `handoff-gym/` | Handoff and continuation experiments |
-| `evals/` | Evaluation datasets, sealing, runners, and saved results |
-| `sft/` | Supervised training and collection tooling |
-| [compaction-eval](compaction-eval/README.md) | Direct handoff-note scoring |
-| [tau2-bridge](tau2-bridge/README.md) | Evaluation-only tau2 benchmark integration |
-| [swe-gym-bridge](swe-gym-bridge/README.md) | Pinned real-issue tasks, repository splits, CPU verifier controls, existing Bionic loop adapter |
-| [ops](ops/README.md) | Job supervision and experiment-specific orchestration |
-| `q4/` | GGUF build tooling; `out/`, `work/`, and `tools/` are ignored local artifacts |
-| `data/` | Task definitions and collected data; preserve provenance and splits |
-| `adapters-sft-1008/`, `lora-*/` | Saved adapters, training metadata, and logs |
-| `runs/` | Job logs, pilot reports, and experiment outputs |
-| [notebook](notebook/README.md) | Shared claims, decisions, and append-only daily logs |
-| [docs](docs/README.md), `research/` | Handoffs, plans, audits, and research notes |
-| `_archive/` | Historical material retained as evidence |
+| Eval | base | SFT r1 | SFT r2 | SFT r3 |
+| --- | ---: | ---: | ---: | ---: |
+| Multi-hop QA, 5 tasks x4 | 5% | 60% | 85% | 90% |
+| Code holdout, 61 tasks x2 | 18.0% | 50.0% | 52.5% | 45.1% |
+| BFCL, 50 tasks x2 | 83% | 80% | 82% | 82% |
+| When2Call, 30 tasks x2 | 80% | 85% | 86.7% | 85% |
 
-## Checkout dependencies
+Sources: [base QA](evals/results/qwen3.5-4b-base-mhqa-w3-cap4096/mhqa.summary.json),
+[r1](evals/results/r1-pilot34-pc5-cap4096/mhqa.summary.json),
+[r2](evals/results/r2-pc5-cap4096/mhqa.summary.json),
+[r3](evals/results/r3-pc5-cap4096/mhqa.summary.json),
+[ood-base](evals/results/ood-base/), [ood-r1](evals/results/ood-r1/),
+[ood-r2](evals/results/ood-r2/), [ood-r3](evals/results/ood-r3/).
+Round-by-round notes: [runs/LOG.md](runs/LOG.md).
 
-`ops/eval_q4.py` uses `../grpo-local-wt-filetools/sandbox-gym`, rather than the
-gym directory in this checkout. `compaction-eval` also defaults to that sibling
-tree. Check the script's actual paths before running it; moving or deleting a
-worktree can break these workflows.
+- The base model fails multi-hop QA mostly by hitting the token cap: 95% of attempts. SFT cuts this to 10%.
+- The code gain is mostly base to r1. r2 and r3 differ by less than the noise of two 122-attempt runs.
+- BFCL and When2Call are flat. SFT did not improve tool calling or abstention.
+- The multi-hop QA set is 5 tasks. Treat 90% as a pilot signal, not a benchmark.
+- The "sealed" code holdout is not confidential. See [the seal audit](docs/AUDIT-SUITE-SEAL-2026-10-26.md).
+- No GRPO result is reported. GRPO ran only as pilot legs ([notebook/Runs.md](notebook/Runs.md)); the later work audited the reward first.
+- The 2B run in `evals/results/qwen3.5-2b` is not a baseline. Its server dropped mid-run and most attempts are request errors.
 
-Read-only orientation from this directory:
+## Evaluation integrity
 
-```powershell
-git status --short
-git worktree list
-Get-Content notebook\Claims.md -Tail 30
-Get-Content notebook\Log\2026-10-21.md -Tail 30
+- [Reward audit](docs/AUDIT-REWARD-2026-10-26.md): the old binary reward gave full credit to wrong work. 11 of 19 selected counterexamples were falsely accepted.
+- [Seal audit](docs/AUDIT-SUITE-SEAL-2026-10-26.md): a checksum stored in the same JSON as the answers does not make a seal.
+- [Teacher data audit](docs/TEACHER-REPAIR-2026-10-26.md): 617 historical SFT rows are marked legacy and unreplayed, not declared correct.
+- Pod evals that ran model code without a sandbox were discarded and renamed `INVALID-unsandboxed` ([notebook](notebook/Log/2026-09-30.md)).
+- [Public suite](suite-v2/README.md): 5 outcome-checked roots. `ops/check_suite_coverage.py --require-broad` fails by design because 4 capabilities have no root.
+
+<p align="center"><img src="docs/media/coverage-check.png" alt="Captured output of check_suite_coverage showing broad_coverage false and four missing capabilities" width="80%"></p>
+
+*Real output of `ops/check_suite_coverage.py --require-broad`, middle of the JSON omitted. Runs offline.*
+
+## How it works
+
+```
+base Qwen3.5-4B -> eval (per bucket) -> collect own wins -> admission checks
+        -> SFT (LoRA r=8) -> re-eval -> GRPO with a contract-checked reward
 ```
 
-Before an authorized long run, use the [operations workflow](ops/README.md).
-Model downloads belong in Docker's `hf-cache` volume through the serving launch;
-follow `AGENTS.md` for the environment constraints.
+1. `evals/eval_runner.py` scores each bucket and resumes by (item, attempt).
+2. `sft/collect.py` gathers wins. `sft/admission.py` rejects rows without bound evidence.
+3. `sft/train_sft.py` trains the LoRA adapter.
+4. Gyms in `sandbox-gym/` run the agent against seeded workspaces with jailed tools and mechanical graders.
+5. Reward contracts in `ops/reward_contract.py` define what counts as completed work.
 
-## Artifact policy
+## Quick start
 
-Keep source, task definitions, adapter configuration, manifests, and experiment
-evidence reviewable. Generated adapter weights under `adapters-sft-*/` are
-ignored by extension; their JSON metadata, READMEs, and logs remain visible to
-Git. Ignoring a file does not remove it or reclaim disk space.
+Offline checks need Python 3.12 and `pip install -r requirements-offline.txt`. No GPU, model or network.
 
-Do not treat untracked files, old dates, or an `OPEN` claim as proof that data is
-disposable. Resolve ownership before editing, and obtain an explicit deletion
-instruction before removing saved data or stopping runs.
+```
+python -m pytest tests -q           # 223 tests
+python -B ops/qualify_offline.py    # contract qualification with network and model-import tripwires
+python -B ops/check_suite_coverage.py
+```
+
+Training and evaluation need a GPU and a vLLM server with LoRA enabled. `evals/eval_runner.py` refuses to run models unless you pass `--allow-model-run`. Serving commands are in [docs/state.md](docs/state.md). Pod addresses are shown as `<pod-ip>`.
+
+## Layout
+
+- `evals/`: datasets, runner, graders, sealing, saved results.
+- `sft/`: SFT collection, admission checks, trainer.
+- `sandbox-gym/`: file-tool workspace harness and graders.
+- `handoff-gym/`, `tau2-bridge/`: continuation and tau2 evaluation harnesses.
+- `suite-v2/`: public outcome-contract tasks and coverage inventory.
+- `ops/`: reward contracts, audits, offline qualification, run supervision.
+- `tests/`: offline tests.
+- `docs/`: audits and repair notes. The previous README is in [docs/DETAILS.md](docs/DETAILS.md).
+- `notebook/`, `runs/`: run register and per-round logs.
+
+## Status
+
+- Works: SFT rounds r1-r3, per-bucket evaluation, offline qualification, reward and seal audits.
+- Open: no repaired GRPO run; the suite covers 5 roots and lacks 4 required capabilities.
+- Open: no confidential final evaluator exists. Final evaluation is disabled until one does.
+- Next: add independent task roots, replay historical wins, then retrain under the repaired reward.
